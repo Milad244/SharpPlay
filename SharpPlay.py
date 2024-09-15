@@ -11,14 +11,9 @@ playlists_path = os.path.join(os.path.dirname(__file__), "Music")
 # Music files
 playlist_dict, songs_dict, playlist_array, songs_array = {}, {}, [], []
 
-# For Tkinter
-pause_button = None
-playback_button = None
-
 
 # Initialize playlists and songs
 def init_playlists_and_songs():
-    playlist_count = 0
     playlists = os.listdir(playlists_path)
 
     for playlist in playlists:
@@ -34,7 +29,6 @@ def init_playlists_and_songs():
             songs_array.append(song)
 
         playlist_array.append(playlist)
-        playlist_count += 1
 
 
 # Class
@@ -58,6 +52,9 @@ class MusicPlayerState:
         # song name and path
         self.current_song = None
         self.current_song_path = None
+        # Tkinter buttons
+        self.pause_button = None
+        self.playback_button = None
 
         # Initializing mixer and setting volume
         mixer.init()
@@ -68,9 +65,10 @@ class MusicPlayerState:
         self.music_volume = volume / 4
         mixer.music.set_volume(self.music_volume)
 
-    # Loads and plays song (last step)
+    # Loads and plays song
     def load_and_play(self, song_path):
         self.is_song_paused, self.is_stopped_playing = False, False
+        self.update_pause_button()
         mixer.music.load(song_path)
         mixer.music.play()
 
@@ -80,45 +78,86 @@ class MusicPlayerState:
             self.load_and_play(self.current_song_path)
         else:
             self.advance_song()
-            song_path = self.get_current_song_path()
-            self.load_and_play(song_path)
+            self.load_and_play(self.current_song_path)
+
+    # Plays previous song
+    def previous_song(self):
+        if self.is_repeat_song:
+            self.load_and_play(self.current_song_path)
+        else:
+            self.reverse_song()
+            self.load_and_play(self.current_song_path)
 
     # Advances to the next song in the playlist or shuffle order
     def advance_song(self):
-        if self.current_playing_index < len(self.playing_order):
-            self.current_playing_index += 1
-        else:
-            self.current_playing_index = 0
-
-    # Returns current song path
-    def get_current_song_path(self):
         if self.is_shuffle_playlist:
+            if self.current_playing_index < len(self.shuffle_order) - 1:
+                self.current_playing_index += 1
+            else:
+                self.current_playing_index = 0
+
             self.current_song = self.shuffle_order[self.current_playing_index]
-        else:
+
+        elif self.is_repeat_playlist:
+            if self.current_playing_index < len(self.playing_order) - 1:
+                self.current_playing_index += 1
+            else:
+                self.current_playing_index = 0
+
             self.current_song = self.playing_order[self.current_playing_index]
-        return playlist_dict[self.current_playlist][self.current_song]
+
+        self.current_song_path = playlist_dict[self.current_playlist][self.current_song]
+
+    # Reverses to the prev song in the playlist or shuffle order
+    def reverse_song(self):
+        if self.is_shuffle_playlist:
+            if self.current_playing_index > 0:
+                self.current_playing_index -= 1
+            else:
+                self.current_playing_index = len(self.shuffle_order) - 1
+            self.current_song = self.shuffle_order[self.current_playing_index]
+
+        elif self.is_repeat_playlist:
+            if self.current_playing_index > 0:
+                self.current_playing_index -= 1
+            else:
+                self.current_playing_index = len(self.playing_order) - 1
+            self.current_song = self.playing_order[self.current_playing_index]
+
+        self.current_song_path = playlist_dict[self.current_playlist][self.current_song]
 
     # Plays a specific song or playlist
     def play_music(self, song):
         self.current_song = song
-        self.playing_order = list(playlist_dict[self.current_playlist].keys())
-        self.current_playing_index = self.playing_order.index(song)
-        self.current_song_path = self.get_current_song_path()
+        self.current_song_path = playlist_dict[self.current_playlist][song]
         self.load_and_play(self.current_song_path)
+        if self.is_shuffle_playlist:
+            self.shuffle_playlist()
+        elif self.is_repeat_playlist:
+            self.repeat_playlist()
 
-    def control_music(self, command, update_button_function=None):
+    # Shuffles current playlist
+    def shuffle_playlist(self):
+        self.shuffle_order = random.sample(self.playing_order, len(self.playing_order))
+        self.current_playing_index = self.shuffle_order.index(self.current_song)
+
+    def repeat_playlist(self):
+        self.playing_order = list(playlist_dict[self.current_playlist].keys())
+        self.current_playing_index = self.playing_order.index(self.current_song)
+
+    def control_music(self, command):
         if command == "pause" and mixer.music.get_busy():
             self.is_song_paused = True
             mixer.music.pause()
-            update_button_function()
+            self.update_pause_button()
 
         elif command == "unpause":
             self.is_song_paused = False
             mixer.music.unpause()
-            update_button_function()
+            self.update_pause_button()
 
         elif command == "previous":
-            pass
+            self.previous_song()
 
         elif command == "next":
             self.next_song()
@@ -127,24 +166,37 @@ class MusicPlayerState:
             self.is_repeat_song = True
             self.is_repeat_playlist = False
             self.is_shuffle_playlist = False
-            update_button_function()
+            self.update_playback_button()
 
         elif command == "repeat_playlist":
             self.is_repeat_song = False
             self.is_repeat_playlist = True
             self.is_shuffle_playlist = False
-            update_button_function()
+            self.repeat_playlist()
+            self.update_playback_button()
 
         elif command == "shuffle_playlist":
             self.is_repeat_song = False
             self.is_repeat_playlist = False
             self.is_shuffle_playlist = True
-            update_button_function()
             self.shuffle_playlist()
+            self.update_playback_button()
 
-    # Shuffles current playlist
-    def shuffle_playlist(self):
-        self.shuffle_order = random.sample(self.playing_order, len(self.playing_order))
+    def update_playback_button(self):
+        if self.is_repeat_song:
+            self.playback_button.config(text="Repeating Song",
+                                        command=lambda c="repeat_playlist": self.control_music(c))
+        elif self.is_repeat_playlist:
+            self.playback_button.config(text="Repeating Playlist",
+                                        command=lambda c="shuffle_playlist": self.control_music(c))
+        elif self.is_shuffle_playlist:
+            self.playback_button.config(text="Shuffling Playlist", command=lambda c="repeat_song": self.control_music(c))
+
+    def update_pause_button(self):
+        if self.is_song_paused:
+            self.pause_button.config(text="Unpause", command=lambda c="unpause": self.control_music(c))
+        else:
+            self.pause_button.config(text="Pause", command=lambda c="pause": self.control_music(c))
 
 
 # Initializing Music Player
@@ -226,23 +278,11 @@ def init_tkinter():
                                 command=lambda c="previous": music_player.control_music(c))
     previous_button.pack(side=tk.LEFT, padx=10)
 
-    def update_pause_button():
-        global pause_button
-
-        if pause_button:
-            # Update the existing button instead of creating a new one
-            if music_player.is_song_paused:
-                pause_button.config(text="Unpause", command=lambda c="unpause": music_player.control_music(c, update_pause_button))
-            else:
-                pause_button.config(text="Pause", command=lambda c="pause": music_player.control_music(c, update_pause_button))
-        else:
-            # Initialize the button the first time
-            pause_button = tk.Button(control_frame, text="Pause", font=('Segoe UI', 16), width=10, height=1,
-                                     bg=primary_color, fg=text_color, activebackground=button_hover_color,
-                                     command=lambda c="pause": music_player.control_music(c, update_pause_button))
-            pause_button.pack(side=tk.LEFT, padx=10)
-
-    update_pause_button()
+    # Initialize the button the first time
+    music_player.pause_button = tk.Button(control_frame, text="Pause", font=('Segoe UI', 16), width=10, height=1,
+                             bg=primary_color, fg=text_color, activebackground=button_hover_color,
+                             command=lambda c="pause": music_player.control_music(c))
+    music_player.pause_button.pack(side=tk.LEFT, padx=10)
 
     next_button = tk.Button(control_frame, text="Next", font=('Segoe UI', 16), width=10, height=1,
                             bg=primary_color, fg=text_color, activebackground=button_hover_color,
@@ -256,28 +296,12 @@ def init_tkinter():
     volume_slider.pack(side=tk.LEFT, padx=10)
     volume_slider.set(music_player.music_volume * 100)
 
-    def update_playback_button():
-        global playback_button
-
-        if playback_button:
-            # Update the existing button instead of creating a new one
-            if music_player.is_repeat_song:
-                playback_button.config(text="Repeating Song",
-                                       command=lambda c="repeat_playlist": music_player.control_music(c, update_playback_button))
-            elif music_player.is_repeat_playlist:
-                playback_button.config(text="Repeating Playlist",
-                                       command=lambda c="shuffle_playlist": music_player.control_music(c, update_playback_button))
-            elif music_player.is_shuffle_playlist:
-                playback_button.config(text="Shuffling Playlist",
-                                       command=lambda c="repeat_song": music_player.control_music(c, update_playback_button))
-        else:
-            # Initialize the button the first time
-            playback_button = tk.Button(control_frame, text="Repeating Playlist", font=('Segoe UI', 16), width=20, height=1,
-                                        bg=primary_color, fg=text_color, activebackground=button_hover_color,
-                                        command=lambda c="shuffle_playlist": music_player.control_music(c, update_playback_button))
-            playback_button.pack(side=tk.LEFT, padx=10)
-
-    update_playback_button()
+    # Initialize the button the first time
+    music_player.playback_button = tk.Button(control_frame, text="Repeating Playlist", font=('Segoe UI', 16), width=20,
+                                             height=1,
+                                             bg=primary_color, fg=text_color, activebackground=button_hover_color,
+                                             command=lambda c="shuffle_playlist": music_player.control_music(c))
+    music_player.playback_button.pack(side=tk.LEFT, padx=10)
 
     background_loop(root)
 
