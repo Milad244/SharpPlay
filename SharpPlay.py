@@ -36,16 +36,17 @@ class MusicPlayerState:
     def __init__(self):
         # volume
         self.music_volume = 0.3
-        # playlist name
-        self.current_playlist = ""
+        # in playlist
+        self.in_playlist = ""
         # playing order options
         self.is_repeat_playlist = True
         self.is_shuffle_playlist = False
+        self.is_super_shuffle_playlist = False
         self.is_repeat_song = False
-        # playing order
+        # playing
+        self.current_playlist = ""
         self.current_playing_index = 0
-        self.shuffle_order = []
-        self.playing_order = []
+        self.current_order = []
         # playing or not playing
         self.is_song_paused = False
         self.is_stopped_playing = True
@@ -72,6 +73,14 @@ class MusicPlayerState:
         mixer.music.load(song_path)
         mixer.music.play()
 
+    # Helper function to get the next song index
+    def get_next_song_index(self):
+        return (self.current_playing_index + 1) % len(self.current_order)
+
+    # Helper function to get the previous song index
+    def get_previous_song_index(self):
+        return (self.current_playing_index - 1) % len(self.current_order)
+
     # Plays next song
     def next_song(self):
         if self.is_repeat_song:
@@ -88,62 +97,40 @@ class MusicPlayerState:
             self.reverse_song()
             self.load_and_play(self.current_song_path)
 
-    # Advances to the next song in the playlist or shuffle order
+    # Advances to the next song
     def advance_song(self):
-        if self.is_shuffle_playlist:
-            if self.current_playing_index < len(self.shuffle_order) - 1:
-                self.current_playing_index += 1
-            else:
-                self.current_playing_index = 0
-
-            self.current_song = self.shuffle_order[self.current_playing_index]
-
-        elif self.is_repeat_playlist:
-            if self.current_playing_index < len(self.playing_order) - 1:
-                self.current_playing_index += 1
-            else:
-                self.current_playing_index = 0
-
-            self.current_song = self.playing_order[self.current_playing_index]
-
+        self.current_playing_index = self.get_next_song_index()
+        self.current_song = self.current_order[self.current_playing_index]
         self.current_song_path = playlist_dict[self.current_playlist][self.current_song]
 
-    # Reverses to the prev song in the playlist or shuffle order
+    # Reverses to the prev song
     def reverse_song(self):
-        if self.is_shuffle_playlist:
-            if self.current_playing_index > 0:
-                self.current_playing_index -= 1
-            else:
-                self.current_playing_index = len(self.shuffle_order) - 1
-            self.current_song = self.shuffle_order[self.current_playing_index]
-
-        elif self.is_repeat_playlist:
-            if self.current_playing_index > 0:
-                self.current_playing_index -= 1
-            else:
-                self.current_playing_index = len(self.playing_order) - 1
-            self.current_song = self.playing_order[self.current_playing_index]
-
+        self.current_playing_index = self.get_previous_song_index()
+        self.current_song = self.current_order[self.current_playing_index]
         self.current_song_path = playlist_dict[self.current_playlist][self.current_song]
 
     # Plays a specific song or playlist
     def play_music(self, song):
         self.current_song = song
+        self.current_playlist = self.in_playlist
         self.current_song_path = playlist_dict[self.current_playlist][song]
-        self.load_and_play(self.current_song_path)
         if self.is_shuffle_playlist:
             self.shuffle_playlist()
         elif self.is_repeat_playlist:
             self.repeat_playlist()
+        self.load_and_play(self.current_song_path)
 
     # Shuffles current playlist
     def shuffle_playlist(self):
-        self.shuffle_order = random.sample(self.playing_order, len(self.playing_order))
-        self.current_playing_index = self.shuffle_order.index(self.current_song)
+        remaining_songs = [s for s in self.current_order if s != self.current_song]
+        random.shuffle(remaining_songs)
+        self.current_order = remaining_songs
+        self.current_order.insert(0, self.current_song)
+        self.current_playing_index = 0
 
     def repeat_playlist(self):
-        self.playing_order = list(playlist_dict[self.current_playlist].keys())
-        self.current_playing_index = self.playing_order.index(self.current_song)
+        self.current_order = list(playlist_dict[self.current_playlist].keys())
+        self.current_playing_index = self.current_order.index(self.current_song)
 
     def control_music(self, command):
         if command == "pause" and mixer.music.get_busy():
@@ -179,6 +166,14 @@ class MusicPlayerState:
             self.is_repeat_song = False
             self.is_repeat_playlist = False
             self.is_shuffle_playlist = True
+            self.shuffle_playlist()
+            self.update_playback_button()
+
+        elif command == "super_shuffle_playlist":
+            self.is_repeat_song = False
+            self.is_repeat_playlist = False
+            self.is_shuffle_playlist = False
+            self.is_super_shuffle_playlist = True
             self.shuffle_playlist()
             self.update_playback_button()
 
@@ -247,7 +242,7 @@ def init_tkinter():
 
     # Songs Content
     def enter_playlist(playlist):
-        music_player.current_playlist = playlist
+        music_player.in_playlist = playlist
 
         for widget in songs_frame.winfo_children():
             widget.destroy()
@@ -257,6 +252,8 @@ def init_tkinter():
                                     bg=secondary_color, fg=primary_color, activebackground=button_hover_color,
                                     command=lambda s=song: music_player.play_music(s))
             song_button.pack(pady=5)
+
+        canvas.yview_moveto(0)
 
     # Playlist Content
     for index, playlist in enumerate(playlist_array, start=1):
