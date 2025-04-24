@@ -9,6 +9,7 @@ public class DatabaseHandler {
 
     private static final String SONG_TABLE_NAME = "SONG_TABLE";
     private static final String PLAYLIST_TABLE_NAME = "PLAYLIST_TABLE";
+    private static final String PLAYLIST_SONG_TABLE_NAME = "PLAYLIST_SONG_TABLE";
 
     /**
      * Returns database handler which is used to run my database's methods
@@ -26,9 +27,9 @@ public class DatabaseHandler {
      */
     private DatabaseHandler() {
         connect();
-        // Initiate tables
         initSongTable();
         initPlaylistTable();
+        initPlaylistSongTable();
     }
 
     private void connect() {
@@ -54,15 +55,42 @@ public class DatabaseHandler {
         System.out.println(qu);
 
         if (execAction(qu)) {
-            System.out.println("Songs table made/exists");
+            System.out.println(SONG_TABLE_NAME + " made/exists");
         } else {
-            System.out.println("Songs table query failed");
+            System.out.println(SONG_TABLE_NAME +  " query failed");
+        }
+    }
+
+    private void initPlaylistTable() {
+        String qu = "CREATE TABLE IF NOT EXISTS " + PLAYLIST_TABLE_NAME + " ("
+                + "	id INTEGER PRIMARY KEY,"
+                + "	name VARCHAR(255)"
+                + ");";
+        System.out.println(qu);
+
+        if (execAction(qu)) {
+            System.out.println(PLAYLIST_TABLE_NAME + " made/exists");
+        } else {
+            System.out.println(PLAYLIST_TABLE_NAME + " query failed");
+        }
+    }
+
+    private void initPlaylistSongTable() {
+        String qu = "CREATE TABLE IF NOT EXISTS " + PLAYLIST_SONG_TABLE_NAME + " ("
+                + "	playlist_id INTEGER,"
+                + "	song_id INTEGER"
+                + ");";
+        System.out.println(qu);
+
+        if (execAction(qu)) {
+            System.out.println(PLAYLIST_SONG_TABLE_NAME + " made/exists");
+        } else {
+            System.out.println(PLAYLIST_SONG_TABLE_NAME + " query failed");
         }
     }
 
     public void insertSong(Song song) {
-        String qu = "INSERT INTO " + SONG_TABLE_NAME + " (id, file_name, title, author, duration, added, color) VALUES (" +
-                song.getId() + ", '" +
+        String qu = "INSERT INTO " + SONG_TABLE_NAME + " (file_name, title, author, duration, added, color) VALUES ('" +
                 song.getFileName() + "', '" +
                 song.getTitle() + "', '" +
                 song.getAuthor() + "', '" +
@@ -77,6 +105,33 @@ public class DatabaseHandler {
             System.out.println("Song inserted");
         } else {
             System.out.println("Failed to insert song");
+        }
+    }
+
+    public void insertPlaylist(Playlist playlist) {
+        String qu = "INSERT INTO " + PLAYLIST_TABLE_NAME + " (name) VALUES ('" + playlist.getName() + "');";
+
+        System.out.println(qu);
+
+        if (execAction(qu)) {
+            System.out.println("Playlist inserted");
+        } else {
+            System.out.println("Failed to insert playlist");
+        }
+    }
+
+    public void insertPlaylistSong(Playlist playlist, Song song) {
+        String qu = "INSERT INTO " + PLAYLIST_SONG_TABLE_NAME + " (playlist_id, song_id) VALUES ('" +
+                playlist.getId() + "', '" +
+                song.getId() +
+                "');";
+
+        System.out.println(qu);
+
+        if (execAction(qu)) {
+            System.out.println("Playlist_song inserted");
+        } else {
+            System.out.println("Failed to insert playlist_song");
         }
     }
 
@@ -110,19 +165,75 @@ public class DatabaseHandler {
         }
     }
 
-    private void initPlaylistTable() {
+    private Song getSong(int id) {
+        ArrayList<Song> songs = getSongs();
+        for (Song s : songs) {
+            if (s.getId() == id) {
+                return s;
+            }
+        }
+        System.out.println("Couldn't find song");
+        return null;
+    }
 
+    private ArrayList<Playlist> getPlaylists() {
+        ArrayList<Playlist> playlists = new ArrayList<>();
+        String qu = "SELECT * FROM " + PLAYLIST_TABLE_NAME;
+
+        try {
+            ResultSet rs = execQuery(qu);
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+
+                playlists.add(new Playlist(id, name));
+            }
+            System.out.println("Playlists got successfully");
+            return playlists;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Failed to get playlists");
+            return null;
+        }
+    }
+
+    public ArrayList<Playlist> getPlaylistsWSongs() {
+        ArrayList<Playlist> playlists = getPlaylists();
+
+        try {
+            for (Playlist p : playlists) {
+                ArrayList<Song> songs = new ArrayList<>();
+
+                String qu = "SELECT * FROM " + PLAYLIST_SONG_TABLE_NAME +
+                        " WHERE playlist_id = '" + p.getId() + "';";
+                ResultSet rs = execQuery(qu); //contains playlist & song id's
+                while (rs.next()) {
+                    int songId = rs.getInt("song_id");
+                    songs.add(getSong(songId));
+                }
+                p.setSongs(songs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Failed to get playlistsWSongs");
+            return null;
+        }
+
+        return playlists;
     }
 
     public void dropAll() {
         String qu = "DROP TABLE " + SONG_TABLE_NAME;
         System.out.println(qu);
+        execAction(qu);
 
-        if (execAction(qu)) {
-            System.out.println("Songs table dropped");
-        } else {
-            System.out.println("Songs table failed to drop");
-        }
+        qu = "DROP TABLE " + PLAYLIST_TABLE_NAME;
+        System.out.println(qu);
+        execAction(qu);
+
+       qu = "DROP TABLE " + PLAYLIST_SONG_TABLE_NAME;
+        System.out.println(qu);
+        execAction(qu);
     }
 
     /**

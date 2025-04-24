@@ -1,5 +1,5 @@
 # Architecture
-1. Local DB. This DB will have 2 tables: songs; playlists. Library: https://github.com/xerial/sqlite-jdbc
+1. Local DB. This DB will have 3 tables: songs; playlists; playlist songs. Library: https://github.com/xerial/sqlite-jdbc
 2. JavaFX for the GUI.
 3. I will also use Google Drive to allow users to download from a library of songs to get started or if they don't have music files.
 4. I could maybe even let users upload to the Google Drive library but not totally sure yet.
