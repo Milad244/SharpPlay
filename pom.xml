@@ -21,6 +21,22 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.49.1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>22</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>22</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>22</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -1,18 +1,22 @@
+package com.milad.core;
+
 import java.sql.Date;
 import java.sql.Time;
 
 public class Song {
     private final int id;
-    private final String fileName;
+    private final String file;
+    private final String iconFile;
     private final String title;
     private final String author;
     private final Time duration;
     private final Date added;
     private final int color;
 
-    public Song(String fileName, String title, String author, Time duration, Date added, int color) {
+    public Song(String file, String iconFile, String title, String author, Time duration, Date added, int color) {
         id = -1;
-        this.fileName = fileName;
+        this.file = file;
+        this.iconFile = iconFile;
         this.title = title;
         this.author = author;
         this.duration = duration;
@@ -20,9 +24,10 @@ public class Song {
         this.color = color;
     }
 
-    public Song(int id, String fileName, String title, String author, Time duration, Date added, int color) {
+    public Song(int id, String file, String iconFile, String title, String author, Time duration, Date added, int color) {
         this.id = id;
-        this.fileName = fileName;
+        this.file = file;
+        this.iconFile = iconFile;
         this.title = title;
         this.author = author;
         this.duration = duration;
@@ -34,8 +39,12 @@ public class Song {
         return id;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getFile() {
+        return file;
+    }
+
+    public String getIconFile() {
+        return iconFile;
     }
 
     public String getTitle() {
@@ -62,7 +71,8 @@ public class Song {
     public String toString() {
         return "Song{" +
                 "id=" + id +
-                ", fileName='" + fileName + '\'' +
+                ", file='" + file + '\'' +
+                ", iconFile='" + iconFile + '\'' +
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", duration=" + duration +

@@ -3,7 +3,6 @@
 2. JavaFX for the GUI.
 3. I will also use Google Drive to allow users to download from a library of songs to get started or if they don't have music files.
 4. I could maybe even let users upload to the Google Drive library but not totally sure yet.
-5. Java classes for the logic of my app.
 
 # Features
 - Different color song icons (customization)

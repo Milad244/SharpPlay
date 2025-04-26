@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.milad.gui.MainController">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="800.0">
+         <children>
+            <VBox prefHeight="52.0" prefWidth="129.0">
+               <children>
+                  <Label text="SharpPlay">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="10.0" layoutY="10.0" prefWidth="124.0" text="Creator: Milad K. Abdi" />
+               </children>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+            </VBox>
+            <ImageView fitHeight="44.0" fitWidth="59.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="3.0" left="3.0" top="3.0" />
+         </padding>
+      </HBox>
+      <HBox prefHeight="475.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+         <children>
+            <ListView fx:id="menuList" maxWidth="250.0" prefHeight="461.0" prefWidth="250.0" HBox.hgrow="ALWAYS" />
+            <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <ListView fx:id="songsList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox maxHeight="100.0" prefHeight="100.0" prefWidth="200.0" />
+   </children>
+</VBox>

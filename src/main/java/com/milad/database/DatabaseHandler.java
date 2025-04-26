@@ -1,3 +1,7 @@
+package com.milad.database;
+import com.milad.core.Song;
+import com.milad.core.Playlist;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -45,7 +49,8 @@ public class DatabaseHandler {
     private void initSongTable() {
         String qu = "CREATE TABLE IF NOT EXISTS " + SONG_TABLE_NAME + " ("
                 + "	id INTEGER PRIMARY KEY,"
-                + "	file_name VARCHAR(255),"
+                + "	file VARCHAR(255),"
+                + "	icon_file VARCHAR(255),"
                 + "	title VARCHAR(255),"
                 + "	author VARCHAR(255),"
                 + "	duration TIME,"
@@ -64,7 +69,8 @@ public class DatabaseHandler {
     private void initPlaylistTable() {
         String qu = "CREATE TABLE IF NOT EXISTS " + PLAYLIST_TABLE_NAME + " ("
                 + "	id INTEGER PRIMARY KEY,"
-                + "	name VARCHAR(255)"
+                + "	name VARCHAR(255),"
+                + "	icon_file VARCHAR(255)"
                 + ");";
         System.out.println(qu);
 
@@ -90,8 +96,9 @@ public class DatabaseHandler {
     }
 
     public void insertSong(Song song) {
-        String qu = "INSERT INTO " + SONG_TABLE_NAME + " (file_name, title, author, duration, added, color) VALUES ('" +
-                song.getFileName() + "', '" +
+        String qu = "INSERT INTO " + SONG_TABLE_NAME + " (file, icon_file, title, author, duration, added, color) VALUES ('" +
+                song.getFile() + "', '" +
+                song.getIconFile() + "', '" +
                 song.getTitle() + "', '" +
                 song.getAuthor() + "', '" +
                 song.getDuration() + "', '" +
@@ -109,7 +116,10 @@ public class DatabaseHandler {
     }
 
     public void insertPlaylist(Playlist playlist) {
-        String qu = "INSERT INTO " + PLAYLIST_TABLE_NAME + " (name) VALUES ('" + playlist.getName() + "');";
+        String qu = "INSERT INTO " + PLAYLIST_TABLE_NAME + " (name, icon_file) VALUES ('" +
+                playlist.getName() + "', '" +
+                playlist.getIconFile() +
+                "');";
 
         System.out.println(qu);
 
@@ -143,7 +153,8 @@ public class DatabaseHandler {
             ResultSet rs = execQuery(qu);
             while (rs.next()) {
                 int id = rs.getInt("id");
-                String file_name = rs.getString("file_name");
+                String file = rs.getString("file");
+                String iconFile = rs.getString("icon_file");
                 String title = rs.getString("title");
                 String author = rs.getString("author");
 
@@ -154,7 +165,7 @@ public class DatabaseHandler {
                 Date added = Date.valueOf(addedStr);
 
                 int color = rs.getInt("color");
-                songs.add(new Song(id, file_name, title, author, duration, added, color));
+                songs.add(new Song(id, file, iconFile, title, author, duration, added, color));
             }
             System.out.println("Songs got successfully");
             return songs;
@@ -185,8 +196,9 @@ public class DatabaseHandler {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
+                String iconFile = rs.getString("icon_file");
 
-                playlists.add(new Playlist(id, name));
+                playlists.add(new Playlist(id, name, iconFile));
             }
             System.out.println("Playlists got successfully");
             return playlists;
