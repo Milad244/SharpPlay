@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -25,7 +27,10 @@
                   <Insets left="5.0" />
                </padding>
             </VBox>
-            <ImageView fitHeight="44.0" fitWidth="59.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fitHeight="44.0" fitWidth="59.0" onMouseClicked="#loadHome" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../icons/Home.png" />
+               </image></ImageView>
          </children>
          <VBox.margin>
             <Insets />
@@ -36,10 +41,15 @@
       </HBox>
       <HBox prefHeight="475.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
          <children>
-            <ListView fx:id="menuList" maxWidth="250.0" prefHeight="461.0" prefWidth="250.0" HBox.hgrow="ALWAYS" />
+            <ListView fx:id="menuList" maxWidth="500.0" prefHeight="461.0" prefWidth="250.0" HBox.hgrow="ALWAYS" />
             <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                <children>
-                  <ListView fx:id="songsList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="songsList" minWidth="550.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <VBox fx:id="homeVBox" alignment="TOP_CENTER" minWidth="550.0" prefHeight="200.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#openNewPlaylistWindow" text="New Playlist" />
+                     </children>
+                  </VBox>
                </children>
             </VBox>
          </children>

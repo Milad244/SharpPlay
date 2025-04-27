@@ -27,7 +27,6 @@ public class MainJFXLauncher extends Application {
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.show();
-        // Double call needed so screen is properly sized
         primaryStage.setWidth(800);
         primaryStage.setHeight(600);
     }

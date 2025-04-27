@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class DatabaseHandler {
-    private static final String DB_url = "jdbc:sqlite:sharpPlay_db";
+    private static final String DB_url = "jdbc:sqlite:User_Data/SharpPlay_DB";
     private static Connection conn = null;
     private static Statement stmt = null;
     public static DatabaseHandler handler;

@@ -21,7 +21,7 @@ public class Main {
         // The following methods are commands. Please only do one each runtime
 
         //db.dropAll();
-        //test();
+        test();
         printValues();
         */
     }
