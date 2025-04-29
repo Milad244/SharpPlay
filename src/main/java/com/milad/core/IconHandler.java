@@ -17,4 +17,22 @@ public class IconHandler {
             throw new RuntimeException(e);
         }
     }
+
+    public static ImageView getIcon(String filepath) {
+        try {
+            //Getting image and putting it into imageview
+            InputStream stream = new FileInputStream(filepath);
+            Image icon = new Image(stream);
+            ImageView imageView = new ImageView();
+            imageView.setImage(icon);
+
+            //Styling
+            imageView.setFitHeight(50);
+            imageView.setPreserveRatio(true);
+
+            return imageView;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

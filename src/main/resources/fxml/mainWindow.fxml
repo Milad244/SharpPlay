@@ -31,6 +31,14 @@
                <image>
                   <Image url="@../icons/Home.png" />
                </image></ImageView>
+            <ImageView fitHeight="44.0" fitWidth="60.0" layoutX="142.0" layoutY="17.0" onMouseClicked="#loadLibrary" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../icons/Library_Icon.png" />
+               </image>
+               <HBox.margin>
+                  <Insets left="5.0" top="3.0" />
+               </HBox.margin>
+            </ImageView>
          </children>
          <VBox.margin>
             <Insets />
@@ -48,6 +56,11 @@
                   <VBox fx:id="homeVBox" alignment="TOP_CENTER" minWidth="550.0" prefHeight="200.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
                      <children>
                         <Button mnemonicParsing="false" onAction="#openNewPlaylistWindow" text="New Playlist" />
+                     </children>
+                  </VBox>
+                  <VBox fx:id="libraryVBox" alignment="TOP_CENTER" layoutX="10.0" layoutY="239.0" minWidth="550.0" prefHeight="200.0" prefWidth="550.0">
+                     <children>
+                        <Button mnemonicParsing="false" text="New Song" />
                      </children>
                   </VBox>
                </children>

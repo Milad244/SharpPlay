@@ -1,5 +1,6 @@
 package com.milad.gui;
 
+import com.milad.core.IconHandler;
 import com.milad.core.Playlist;
 import com.milad.core.Song;
 import com.milad.database.DatabaseHandler;
@@ -9,54 +10,77 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController implements Initializable {
 
     public ListView<Playlist> menuList;
     public ListView<Song> songsList;
     public VBox homeVBox;
+    public VBox libraryVBox;
 
+    private DatabaseHandler db;
     private enum Mode {
-        HOME, SONG
+        HOME, LIBRARY, SONG;
+        private Region container;
+
+        public void setContainer(Region container) {
+            this.container = container;
+        }
+
+        public Region getContainer() {
+            return container;
+        }
     }
     private Stage newPlaylistStage;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        loadMenuList();
+        db = DatabaseHandler.getHandler();
+        Mode.HOME.setContainer(homeVBox);
+        Mode.LIBRARY.setContainer(libraryVBox);
+        Mode.SONG.setContainer(songsList);
 
+        loadMenuList();
         changeMode(Mode.HOME);
     }
 
+    private void showRegion(Region region, Boolean show) {
+        region.setVisible(show);
+        region.setManaged(show);
+    }
+
     private void changeMode(Mode mode) {
-        songsList.setVisible(false);
-        songsList.setManaged(false);
-        homeVBox.setVisible(false);
-        homeVBox.setManaged(false);
-        if (mode.equals(Mode.SONG)) {
-            songsList.setVisible(true);
-            songsList.setManaged(true);
-        } else if (mode.equals(Mode.HOME)) {
-            homeVBox.setVisible(true);
-            homeVBox.setManaged(true);
+        for (Mode m : Mode.values()) {
+            showRegion(m.getContainer(), false);
         }
+
+        // Clears playlist selection if no longer in playlist
+        if (mode != Mode.SONG) {
+            menuList.getSelectionModel().clearSelection();
+        }
+
+        showRegion(mode.getContainer(), true);
     }
 
     public void loadHome() {
         changeMode(Mode.HOME);
     }
 
+    public void loadLibrary() {
+        changeMode(Mode.LIBRARY);
+    }
+
     private void loadMenuList() {
         menuList.getItems().clear();
 
-        ArrayList<Playlist> playlists = DatabaseHandler.getHandler().getPlaylistsWSongs();
+        ArrayList<Playlist> playlists = db.getPlaylistsWSongs();
         menuList.getItems().addAll(playlists);
 
         menuList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
@@ -66,15 +90,16 @@ public class MainController implements Initializable {
             }
         });
 
-        // Will add icon here too
-        menuList.setCellFactory(playlistListView -> new ListCell<>() {
+        menuList.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Playlist item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
+                    setGraphic(null);
                 } else {
                     setText(item.getName());
+                    setGraphic(IconHandler.getIcon(item.getIconFile()));
                 }
             }
         });
@@ -92,7 +117,7 @@ public class MainController implements Initializable {
         });
 
         // Will add icon here too
-        songsList.setCellFactory(songListView -> new ListCell<>() {
+        songsList.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Song item, boolean empty) {
                 super.updateItem(item, empty);
