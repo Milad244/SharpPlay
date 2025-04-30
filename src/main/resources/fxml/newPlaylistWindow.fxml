@@ -4,41 +4,46 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.milad.gui.NewPlaylistController">
    <children>
       <HBox alignment="CENTER" prefHeight="74.0" prefWidth="800.0" spacing="5.0">
          <children>
-            <Label text="Playlist Name" />
+            <Label text="Playlist Name">
+               <font>
+                  <Font size="16.0" />
+               </font></Label>
             <TextField fx:id="playlistNameField" />
          </children>
       </HBox>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
          <children>
-            <Label text="Playlist Icon" />
+            <Label text="Playlist Icon">
+               <font>
+                  <Font size="20.0" />
+               </font></Label>
             <HBox alignment="CENTER" prefHeight="163.0" prefWidth="800.0">
                <children>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../icons/Default_Playlist_Icon.png" />
-                           </image>
-                        </ImageView>
-                        <Button mnemonicParsing="false" onAction="#selectDefaultIcon" text="Select" />
+                        <ImageView fx:id="defaultImageView" fitHeight="100.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                        <Button fx:id="selectDefaultBtn" mnemonicParsing="false" onAction="#selectDefaultIcon" text="Select" />
                      </children>
                   </VBox>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <ImageView fx:id="fromFileImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                        <Button mnemonicParsing="false" onAction="#selectFileIcon" text="Select From Files" />
+                        <ImageView fx:id="fromFileImageView" fitHeight="100.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                        <Button fx:id="selectFromFileBtn" mnemonicParsing="false" onAction="#selectFileIcon" text="Select From Files" />
                      </children>
                   </VBox>
                </children>
+               <padding>
+                  <Insets top="5.0" />
+               </padding>
             </HBox>
          </children>
       </VBox>

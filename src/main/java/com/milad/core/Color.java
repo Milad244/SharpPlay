@@ -1,8 +1,8 @@
 package com.milad.core;
 
 /**
- * Border colors for icons
+ * Song color
  */
 public enum Color {
-    None, GREEN, BLUE, PURPLE, RED
+    BLACK, GREEN, BLUE, PURPLE, RED
 }

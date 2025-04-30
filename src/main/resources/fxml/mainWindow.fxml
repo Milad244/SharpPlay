@@ -60,7 +60,7 @@
                   </VBox>
                   <VBox fx:id="libraryVBox" alignment="TOP_CENTER" layoutX="10.0" layoutY="239.0" minWidth="550.0" prefHeight="200.0" prefWidth="550.0">
                      <children>
-                        <Button mnemonicParsing="false" text="New Song" />
+                        <Button mnemonicParsing="false" onAction="#openNewSongWindow" text="New Song" />
                      </children>
                   </VBox>
                </children>

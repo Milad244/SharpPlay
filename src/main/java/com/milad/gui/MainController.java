@@ -1,6 +1,5 @@
 package com.milad.gui;
 
-import com.milad.core.IconHandler;
 import com.milad.core.Playlist;
 import com.milad.core.Song;
 import com.milad.database.DatabaseHandler;
@@ -39,10 +38,15 @@ public class MainController implements Initializable {
         }
     }
     private Stage newPlaylistStage;
+    private Stage newSongStage;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         db = DatabaseHandler.getHandler();
+
+        System.out.println(db.getPlaylistsWSongs());
+        System.out.println(db.getSongs());
+
         Mode.HOME.setContainer(homeVBox);
         Mode.LIBRARY.setContainer(libraryVBox);
         Mode.SONG.setContainer(songsList);
@@ -99,7 +103,7 @@ public class MainController implements Initializable {
                     setGraphic(null);
                 } else {
                     setText(item.getName());
-                    setGraphic(IconHandler.getIcon(item.getIconFile()));
+                    setGraphic(GUIHelper.getIcon(item.getIconFile()));
                 }
             }
         });
@@ -152,6 +156,31 @@ public class MainController implements Initializable {
                 newPlaylistStage.setHeight(600);
             } else {
                 newPlaylistStage.toFront();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Could not load window");
+        }
+    }
+
+    public void openNewSongWindow() {
+        try {
+            if (newSongStage == null || !newSongStage.isShowing()) {
+                URL fxmlUrl = getClass().getResource("/fxml/newSongWindow.fxml");
+                if (fxmlUrl == null) {
+                    throw new RuntimeException("FXML file not found");
+                }
+                Parent parent = FXMLLoader.load(fxmlUrl);
+                newSongStage = new Stage();
+                newSongStage.setTitle("Create New Song");
+                newSongStage.setScene(new Scene(parent));
+                newSongStage.setMinWidth(800);
+                newSongStage.setMinHeight(600);
+                newSongStage.show();
+                newSongStage.setWidth(800);
+                newSongStage.setHeight(600);
+            } else {
+                newSongStage.toFront();
             }
         } catch (IOException e) {
             e.printStackTrace();
