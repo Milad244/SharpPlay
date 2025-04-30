@@ -51,19 +51,18 @@ public class NewSongController implements Initializable{
         String songName = songNameField.getText();
         String songAuthor = songAuthorField.getText();
 
-        // Copying icon to local directory if it is not already there
-        File source = new File(newSongFile).getAbsoluteFile();
-        File destination = new File(SONG_FILE_DIR, source.getName()).getAbsoluteFile();
-        if (!source.equals(destination)) {
+        // Copying song to local directory if it is not already there
+        File source = new File(newSongFile);
+        File destination = new File(SONG_FILE_DIR, source.getName());
+        if (!destination.exists()) {
             try {
                 FileUtils.copyFile(source, destination);
-                newSongFile = destination.getPath();
             } catch (IOException e) {
-                e.printStackTrace();
+                GUIHelper.giveUserError("Could not copy song file");
+                return;
             }
-        } else {
-            newSongFile = destination.getPath();
         }
+        newSongFile = destination.getPath();
 
         db.insertSong(new Song(newSongFile, songName, songAuthor, new Date(System.currentTimeMillis()), 0));
         GUIHelper.getStage(songNameField).close();

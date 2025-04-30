@@ -70,29 +70,25 @@ public class NewPlaylistController implements Initializable{
             newPlaylistIconFile = path;
             selectedFromFile(true);
         } catch (IOException e) {
-            e.printStackTrace();
+            GUIHelper.giveUserError("Could not read icon file");
         }
-
     }
 
-    // NEED TO MAKE NOT ABS PATH AND ALSO FIX WHEN FILE ALREADY IS IN USE ERROR
     public void createPlaylist() {
         String playlistName = playlistNameField.getText(); //add checks to this later
 
-        // Moving icon to local directory if it is not the default icon or already there
-        if (!newPlaylistIconFile.equals(PLAYLIST_DEFAULT_ICON)) {
-            File source = new File(newPlaylistIconFile).getAbsoluteFile();
-            File destination = new File(PLAYLIST_ICONS_DIR, source.getName()).getAbsoluteFile();
-            if (!source.equals(destination)) {
+        if (!newPlaylistIconFile.equals(PLAYLIST_DEFAULT_ICON)) { //Skipping if default icon
+            File source = new File(newPlaylistIconFile);
+            File destination = new File(PLAYLIST_ICONS_DIR, source.getName());
+            if (!destination.exists()) { //If file doesn't already exist in icon directory
                 try {
                     FileUtils.copyFile(source, destination);
-                    newPlaylistIconFile = destination.getPath();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    GUIHelper.giveUserError("Could not copy icon file");
+                    return;
                 }
-            } else {
-                newPlaylistIconFile = destination.getPath();
             }
+            newPlaylistIconFile = destination.getPath();
         }
 
         db.insertPlaylist(new Playlist(playlistName, newPlaylistIconFile, new Date(System.currentTimeMillis())));

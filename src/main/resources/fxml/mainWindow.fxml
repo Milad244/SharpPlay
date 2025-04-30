@@ -52,15 +52,43 @@
             <ListView fx:id="menuList" maxWidth="500.0" prefHeight="461.0" prefWidth="250.0" HBox.hgrow="ALWAYS" />
             <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                <children>
-                  <ListView fx:id="songsList" minWidth="550.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <VBox fx:id="songsVBox" minWidth="550.0" prefHeight="200.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <HBox fx:id="playlistControlsHBox" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" prefWidth="550.0" spacing="10.0" />
+                        <ListView fx:id="songsList" minWidth="550.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
                   <VBox fx:id="homeVBox" alignment="TOP_CENTER" minWidth="550.0" prefHeight="200.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#openNewPlaylistWindow" text="New Playlist" />
+                        <Label text="Home" />
+                        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#openNewPlaylistWindow" text="Add New Playlist" />
+                              <Button mnemonicParsing="false" onAction="#openNewSongWindow" text="Add New Song" />
+                           </children>
+                           <padding>
+                              <Insets top="15.0" />
+                           </padding>
+                        </HBox>
                      </children>
                   </VBox>
                   <VBox fx:id="libraryVBox" alignment="TOP_CENTER" layoutX="10.0" layoutY="239.0" minWidth="550.0" prefHeight="200.0" prefWidth="550.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#openNewSongWindow" text="New Song" />
+                        <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                           <children>
+                              <Button mnemonicParsing="false" text="Manage Playlists" />
+                              <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Manage Songs" />
+                           </children>
+                           <padding>
+                              <Insets top="15.0" />
+                           </padding>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <ListView minWidth="550.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0" />
                      </children>
                   </VBox>
                </children>

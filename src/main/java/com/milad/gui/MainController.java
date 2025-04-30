@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -23,6 +24,8 @@ public class MainController implements Initializable {
     public ListView<Song> songsList;
     public VBox homeVBox;
     public VBox libraryVBox;
+    public VBox songsVBox;
+    public HBox playlistControlsHBox;
 
     private DatabaseHandler db;
     private enum Mode {
@@ -49,7 +52,7 @@ public class MainController implements Initializable {
 
         Mode.HOME.setContainer(homeVBox);
         Mode.LIBRARY.setContainer(libraryVBox);
-        Mode.SONG.setContainer(songsList);
+        Mode.SONG.setContainer(songsVBox);
 
         loadMenuList();
         changeMode(Mode.HOME);
@@ -90,6 +93,7 @@ public class MainController implements Initializable {
         menuList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 changeMode(Mode.SONG);
+                loadPlaylistOptions(newVal);
                 loadSongList(newVal);
             }
         });
@@ -109,6 +113,12 @@ public class MainController implements Initializable {
         });
     }
 
+    private void loadPlaylistOptions(Playlist selectedPlaylist) {
+        playlistControlsHBox.getChildren().clear();
+
+        // Add stuff like start playlist here (playlist controls)
+    }
+
     private void loadSongList(Playlist selectedPlaylist) {
         songsList.getItems().clear();
 
@@ -120,7 +130,6 @@ public class MainController implements Initializable {
             }
         });
 
-        // Will add icon here too
         songsList.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Song item, boolean empty) {
@@ -129,6 +138,7 @@ public class MainController implements Initializable {
                     setText(null);
                 } else {
                     setText(item.getTitle());
+                    // Set song color here
                 }
             }
         });
@@ -149,11 +159,11 @@ public class MainController implements Initializable {
                 newPlaylistStage = new Stage();
                 newPlaylistStage.setTitle("Create New Playlist");
                 newPlaylistStage.setScene(new Scene(parent));
-                newPlaylistStage.setMinWidth(800);
-                newPlaylistStage.setMinHeight(600);
+                newPlaylistStage.setMinWidth(640);
+                newPlaylistStage.setMinHeight(480);
                 newPlaylistStage.show();
-                newPlaylistStage.setWidth(800);
-                newPlaylistStage.setHeight(600);
+                newPlaylistStage.setWidth(640);
+                newPlaylistStage.setHeight(480);
             } else {
                 newPlaylistStage.toFront();
             }
@@ -174,11 +184,11 @@ public class MainController implements Initializable {
                 newSongStage = new Stage();
                 newSongStage.setTitle("Create New Song");
                 newSongStage.setScene(new Scene(parent));
-                newSongStage.setMinWidth(800);
-                newSongStage.setMinHeight(600);
+                newSongStage.setMinWidth(640);
+                newSongStage.setMinHeight(480);
                 newSongStage.show();
-                newSongStage.setWidth(800);
-                newSongStage.setHeight(600);
+                newSongStage.setWidth(640);
+                newSongStage.setHeight(480);
             } else {
                 newSongStage.toFront();
             }
