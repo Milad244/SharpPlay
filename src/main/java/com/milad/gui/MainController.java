@@ -3,31 +3,36 @@ package com.milad.gui;
 import com.milad.core.Playlist;
 import com.milad.core.Song;
 import com.milad.database.DatabaseHandler;
-import javafx.fxml.FXMLLoader;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.ListCell;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 public class MainController implements Initializable {
 
-    public ListView<Playlist> menuList;
+    public ListView<Playlist> playlistList;
     public ListView<Song> songsList;
     public VBox homeVBox;
     public VBox libraryVBox;
     public VBox songsVBox;
     public HBox playlistControlsHBox;
+    public VBox manageVBox;
+    public ListView<Playlist> managePlaylistsList;
+    public ListView<Song> manageSongsList;
 
     private DatabaseHandler db;
+
     private enum Mode {
         HOME, LIBRARY, SONG;
         private Region container;
@@ -40,6 +45,7 @@ public class MainController implements Initializable {
             return container;
         }
     }
+    
     private Stage newPlaylistStage;
     private Stage newSongStage;
 
@@ -54,26 +60,21 @@ public class MainController implements Initializable {
         Mode.LIBRARY.setContainer(libraryVBox);
         Mode.SONG.setContainer(songsVBox);
 
-        loadMenuList();
+        loadPlaylistList();
         changeMode(Mode.HOME);
-    }
-
-    private void showRegion(Region region, Boolean show) {
-        region.setVisible(show);
-        region.setManaged(show);
     }
 
     private void changeMode(Mode mode) {
         for (Mode m : Mode.values()) {
-            showRegion(m.getContainer(), false);
+            GUIHelper.showRegion(m.getContainer(), false);
         }
 
         // Clears playlist selection if no longer in playlist
         if (mode != Mode.SONG) {
-            menuList.getSelectionModel().clearSelection();
+            playlistList.getSelectionModel().clearSelection();
         }
 
-        showRegion(mode.getContainer(), true);
+        GUIHelper.showRegion(mode.getContainer(), true);
     }
 
     public void loadHome() {
@@ -82,35 +83,144 @@ public class MainController implements Initializable {
 
     public void loadLibrary() {
         changeMode(Mode.LIBRARY);
+        GUIHelper.showRegion(manageSongsList, false);
+        GUIHelper.showRegion(managePlaylistsList, false);
     }
 
-    private void loadMenuList() {
-        menuList.getItems().clear();
+    public void loadManagePlaylists() {
+        GUIHelper.showRegion(manageSongsList, false);
+        GUIHelper.showRegion(managePlaylistsList, true);
+
+        managePlaylistsList.getItems().clear();
+        manageVBox.getChildren().clear();
 
         ArrayList<Playlist> playlists = db.getPlaylistsWSongs();
-        menuList.getItems().addAll(playlists);
+        managePlaylistsList.getItems().addAll(playlists);
 
-        menuList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        managePlaylistsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                loadManage(newVal);
+            }
+        });
+
+        GUIHelper.updatePlaylistListDisplay(managePlaylistsList);
+    }
+
+    public void loadManageSongs() {
+        GUIHelper.showRegion(manageSongsList, true);
+        GUIHelper.showRegion(managePlaylistsList, false);
+
+        manageSongsList.getItems().clear();
+        manageVBox.getChildren().clear();
+
+        ArrayList<Song> songs = db.getSongs();
+        manageSongsList.getItems().addAll(songs);
+
+        manageSongsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                loadManage(newVal);
+            }
+        });
+
+        GUIHelper.updateSongsListDisplay(manageSongsList);
+    }
+
+    private void loadManage(Playlist p) {
+        manageVBox.getChildren().clear();
+
+        // Rename
+        Label renameLbl = new Label();
+        renameLbl.setText("Rename Playlist: ");
+        TextField renameTextField = new TextField();
+        Button renameBtn = new Button();
+        renameBtn.setText("Rename");
+        renameBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                String rename = renameTextField.getText();
+                renameTextField.clear();
+                // Logic TBD
+            }
+        });
+        HBox renameHBox = new HBox(renameLbl, renameTextField, renameBtn);
+        renameHBox.setAlignment(Pos.CENTER);
+        renameHBox.setSpacing(5);
+
+        // Stats
+        Label dateLbl = new Label();
+        dateLbl.setText("Date added: " + p.getAdded());
+        HBox statsHBox = new HBox(dateLbl);
+        statsHBox.setAlignment(Pos.CENTER);
+
+        // Delete
+        Button deleteBtn = new Button();
+        deleteBtn.setText("Delete Playlist");
+        deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                // Logic TBD
+            }
+        });
+        HBox deleteHBox = new HBox(deleteBtn);
+        deleteHBox.setAlignment(Pos.CENTER);
+
+        manageVBox.getChildren().addAll(statsHBox, renameHBox, deleteHBox);
+    }
+
+    private void loadManage(Song s) {
+        manageVBox.getChildren().clear();
+
+        // Stats
+        Label authorLbl = new Label();
+        authorLbl.setText("Author: " + s.getAuthor());
+        Label dateLbl = new Label();
+        dateLbl.setText("Date added: " + s.getAdded());
+        VBox statsVBox = new VBox(authorLbl, dateLbl);
+        statsVBox.setAlignment(Pos.CENTER);
+
+        // Add/Remove
+        Button addRBtn = new Button();
+        addRBtn.setText("Add/Remove Song From Playlists");
+        addRBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                // Logic TBD
+            }
+        });
+        HBox addRHBox = new HBox(addRBtn);
+        addRHBox.setAlignment(Pos.CENTER);
+
+        // Delete
+        Button deleteBtn = new Button();
+        deleteBtn.setText("Delete Song");
+        deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                // Logic TBD
+            }
+        });
+        HBox deleteHBox = new HBox(deleteBtn);
+        deleteHBox.setAlignment(Pos.CENTER);
+
+        manageVBox.getChildren().addAll(statsVBox, addRHBox, deleteHBox);
+    }
+
+    private void loadPlaylistList() {
+        playlistList.getItems().clear();
+
+        ArrayList<Playlist> playlists = db.getPlaylistsWSongs();
+        playlistList.getItems().addAll(playlists);
+
+        playlistList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 changeMode(Mode.SONG);
                 loadPlaylistOptions(newVal);
                 loadSongList(newVal);
+                // WILL ADD SONGS USING THIS PLAYLIST LIST AND FROM MANAGE SONGS (- FOR WHEN IN + FOR WHEN NOT IN)
             }
         });
 
-        menuList.setCellFactory(param -> new ListCell<>() {
-            @Override
-            protected void updateItem(Playlist item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(item.getName());
-                    setGraphic(GUIHelper.getIcon(item.getIconFile()));
-                }
-            }
-        });
+        GUIHelper.updatePlaylistListDisplay(playlistList);
     }
 
     private void loadPlaylistOptions(Playlist selectedPlaylist) {
@@ -130,18 +240,7 @@ public class MainController implements Initializable {
             }
         });
 
-        songsList.setCellFactory(param -> new ListCell<>() {
-            @Override
-            protected void updateItem(Song item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.getTitle());
-                    // Set song color here
-                }
-            }
-        });
+        GUIHelper.updateSongsListDisplay(songsList);
     }
 
     private void playSong(Song selectedSong) {
@@ -149,52 +248,20 @@ public class MainController implements Initializable {
     }
 
     public void openNewPlaylistWindow() {
-        try {
-            if (newPlaylistStage == null || !newPlaylistStage.isShowing()) {
-                URL fxmlUrl = getClass().getResource("/fxml/newPlaylistWindow.fxml");
-                if (fxmlUrl == null) {
-                    throw new RuntimeException("FXML file not found");
-                }
-                Parent parent = FXMLLoader.load(fxmlUrl);
-                newPlaylistStage = new Stage();
-                newPlaylistStage.setTitle("Create New Playlist");
-                newPlaylistStage.setScene(new Scene(parent));
-                newPlaylistStage.setMinWidth(640);
-                newPlaylistStage.setMinHeight(480);
-                newPlaylistStage.show();
-                newPlaylistStage.setWidth(640);
-                newPlaylistStage.setHeight(480);
-            } else {
-                newPlaylistStage.toFront();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Could not load window");
+        if (newPlaylistStage == null || !newPlaylistStage.isShowing()) {
+            newPlaylistStage = new Stage();
+            GUIHelper.openNewWindow("/fxml/newPlaylistWindow.fxml", newPlaylistStage, "Create New Playlist", 640, 480);
+        } else {
+            newPlaylistStage.toFront();
         }
     }
 
     public void openNewSongWindow() {
-        try {
-            if (newSongStage == null || !newSongStage.isShowing()) {
-                URL fxmlUrl = getClass().getResource("/fxml/newSongWindow.fxml");
-                if (fxmlUrl == null) {
-                    throw new RuntimeException("FXML file not found");
-                }
-                Parent parent = FXMLLoader.load(fxmlUrl);
-                newSongStage = new Stage();
-                newSongStage.setTitle("Create New Song");
-                newSongStage.setScene(new Scene(parent));
-                newSongStage.setMinWidth(640);
-                newSongStage.setMinHeight(480);
-                newSongStage.show();
-                newSongStage.setWidth(640);
-                newSongStage.setHeight(480);
-            } else {
-                newSongStage.toFront();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Could not load window");
+        if (newSongStage == null || !newSongStage.isShowing()) {
+            newSongStage = new Stage();
+            GUIHelper.openNewWindow("/fxml/newSongWindow.fxml", newSongStage, "Create New Song", 640, 480);
+        } else {
+            newSongStage.toFront();
         }
     }
 }
