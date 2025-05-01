@@ -65,6 +65,8 @@ public class NewSongController implements Initializable{
         newSongFile = destination.getPath();
 
         db.insertSong(new Song(newSongFile, songName, songAuthor, new Date(System.currentTimeMillis()), 0));
+        MainController.getInstance().loadPlaylistList();
+
         GUIHelper.getStage(songNameField).close();
     }
 }

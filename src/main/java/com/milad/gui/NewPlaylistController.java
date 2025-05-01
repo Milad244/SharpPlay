@@ -92,6 +92,8 @@ public class NewPlaylistController implements Initializable{
         }
 
         db.insertPlaylist(new Playlist(playlistName, newPlaylistIconFile, new Date(System.currentTimeMillis())));
+        MainController.getInstance().loadPlaylistList();
+
         GUIHelper.getStage(playlistNameField).close();
     }
 }

@@ -49,8 +49,16 @@ public class MainController implements Initializable {
     private Stage newPlaylistStage;
     private Stage newSongStage;
 
+    // Allowing new playlist/song controllers to access my reload gui methods
+    private static MainController instance;
+    public static MainController getInstance() {
+        return instance;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        instance = this;
+
         db = DatabaseHandler.getHandler();
 
         System.out.println(db.getPlaylistsWSongs());
@@ -139,7 +147,9 @@ public class MainController implements Initializable {
             public void handle(ActionEvent actionEvent) {
                 String rename = renameTextField.getText();
                 renameTextField.clear();
-                // Logic TBD
+                db.changePlaylistName(p, rename);
+                loadPlaylistList();
+                loadManagePlaylists();
             }
         });
         HBox renameHBox = new HBox(renameLbl, renameTextField, renameBtn);
@@ -158,7 +168,9 @@ public class MainController implements Initializable {
         deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                // Logic TBD
+                db.deletePlaylist(p);
+                loadPlaylistList();
+                loadManagePlaylists();
             }
         });
         HBox deleteHBox = new HBox(deleteBtn);
@@ -190,6 +202,9 @@ public class MainController implements Initializable {
         HBox addRHBox = new HBox(addRBtn);
         addRHBox.setAlignment(Pos.CENTER);
 
+        // Color
+        // TBD
+
         // Delete
         Button deleteBtn = new Button();
         deleteBtn.setText("Delete Song");
@@ -205,7 +220,7 @@ public class MainController implements Initializable {
         manageVBox.getChildren().addAll(statsVBox, addRHBox, deleteHBox);
     }
 
-    private void loadPlaylistList() {
+    public void loadPlaylistList() {
         playlistList.getItems().clear();
 
         ArrayList<Playlist> playlists = db.getPlaylistsWSongs();

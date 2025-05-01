@@ -181,6 +181,17 @@ public class DatabaseHandler {
         return null;
     }
 
+    public void changeSongColor(Song songToChange, int color) {
+        String qu = "UPDATE " + SONG_TABLE_NAME +
+                " SET color = '" + color + "' WHERE id = " + songToChange.getId();
+        System.out.println(qu);
+        if (execAction(qu)) {
+            System.out.println("Song color changed");
+        } else {
+            System.out.println("Song color failed to change");
+        }
+    }
+
     private ArrayList<Playlist> getPlaylists() {
         ArrayList<Playlist> playlists = new ArrayList<>();
         String qu = "SELECT * FROM " + PLAYLIST_TABLE_NAME;
@@ -203,6 +214,27 @@ public class DatabaseHandler {
             e.printStackTrace();
             System.out.println("Failed to get playlists");
             return null;
+        }
+    }
+
+    public void changePlaylistName(Playlist playlistToChange, String newPlaylistName) {
+        String qu = "UPDATE " + PLAYLIST_TABLE_NAME +
+                " SET name = '" + newPlaylistName + "' WHERE id = " + playlistToChange.getId();
+        System.out.println(qu);
+        if (execAction(qu)) {
+            System.out.println("Playlist name changed");
+        } else {
+            System.out.println("Playlist name failed to change");
+        }
+    }
+
+    public void deletePlaylist(Playlist playlistToDelete) {
+        String qu = "DELETE FROM " + PLAYLIST_TABLE_NAME + " WHERE id = " + playlistToDelete.getId();
+        System.out.println(qu);
+        if (execAction(qu)) {
+            System.out.println("Playlist deleted");
+        } else {
+            System.out.println("Playlist failed to delete");
         }
     }
 
