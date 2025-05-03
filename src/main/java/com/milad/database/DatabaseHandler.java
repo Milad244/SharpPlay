@@ -192,6 +192,24 @@ public class DatabaseHandler {
         }
     }
 
+    public void deleteSong(Song songToDelete) {
+        String qu = "DELETE FROM " + SONG_TABLE_NAME + " WHERE id = " + songToDelete.getId();
+        System.out.println(qu);
+        if (execAction(qu)) {
+            System.out.println("Song deleted");
+        } else {
+            System.out.println("Song failed to delete");
+        }
+
+        String qu2 = "DELETE FROM " + PLAYLIST_SONG_TABLE_NAME + " WHERE song_id = " + songToDelete.getId();
+        System.out.println(qu2);
+        if (execAction(qu2)) {
+            System.out.println("Song deleted in playlist_songs");
+        } else {
+            System.out.println("Song failed to delete in playlist_songs");
+        }
+    }
+
     private ArrayList<Playlist> getPlaylists() {
         ArrayList<Playlist> playlists = new ArrayList<>();
         String qu = "SELECT * FROM " + PLAYLIST_TABLE_NAME;
@@ -236,6 +254,14 @@ public class DatabaseHandler {
         } else {
             System.out.println("Playlist failed to delete");
         }
+
+        String qu2 = "DELETE FROM " + PLAYLIST_SONG_TABLE_NAME + " WHERE playlist_id = " + playlistToDelete.getId();
+        System.out.println(qu2);
+        if (execAction(qu2)) {
+            System.out.println("Playlist deleted in playlist_songs");
+        } else {
+            System.out.println("Playlist failed to delete in playlist_songs");
+        }
     }
 
     public ArrayList<Playlist> getPlaylistsWSongs() {
@@ -261,6 +287,18 @@ public class DatabaseHandler {
         }
 
         return playlists;
+    }
+
+    public void deletePlaylistSong(Playlist playlist, Song song) {
+        String qu = "DELETE FROM " + PLAYLIST_SONG_TABLE_NAME + " WHERE playlist_id = " + playlist.getId() + " AND song_id = " + song.getId();
+
+        System.out.println(qu);
+
+        if (execAction(qu)) {
+            System.out.println(song.getTitle() + " deleted from " + playlist.getName());
+        } else {
+            System.out.println("Failed to delete " + song.getTitle() + " from " + playlist.getName());
+        }
     }
 
     public void dropAll() {

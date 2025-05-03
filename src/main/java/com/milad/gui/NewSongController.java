@@ -1,9 +1,17 @@
 package com.milad.gui;
 
 import com.milad.core.Song;
+import com.milad.core.SongColor;
 import com.milad.database.DatabaseHandler;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
@@ -17,14 +25,39 @@ public class NewSongController implements Initializable{
 
     public TextField songNameField;
     public TextField songAuthorField;
+    public VBox newColorVBox;
 
     private DatabaseHandler db;
     private String newSongFile;
+    private int newSongColor;
     private static final String SONG_FILE_DIR = "User_Data/Songs";
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         db = DatabaseHandler.getHandler();
+
+        newSongColor = 0; //Setting default color
+        loadNewSongColor();
+    }
+
+    private void loadNewSongColor() {
+        Label colorLbl = new Label();
+        colorLbl.setText("Song Color");
+        HBox colorBtnsHBox = new HBox();
+        for (SongColor c : SongColor.values()) {
+            Button changeColorBtn = new Button();
+            changeColorBtn.setText(c.getColorName());
+            changeColorBtn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    newSongColor = c.ordinal();
+                }
+            });
+            colorBtnsHBox.getChildren().add(changeColorBtn);
+        }
+        colorBtnsHBox.setAlignment(Pos.CENTER);
+        colorBtnsHBox.setSpacing(5);
+        newColorVBox.getChildren().addAll(colorLbl, colorBtnsHBox);
     }
 
     public void selectSongFile() {
@@ -64,7 +97,7 @@ public class NewSongController implements Initializable{
         }
         newSongFile = destination.getPath();
 
-        db.insertSong(new Song(newSongFile, songName, songAuthor, new Date(System.currentTimeMillis()), 0));
+        db.insertSong(new Song(newSongFile, songName, songAuthor, new Date(System.currentTimeMillis()), newSongColor));
         MainController.getInstance().loadPlaylistList();
 
         GUIHelper.getStage(songNameField).close();

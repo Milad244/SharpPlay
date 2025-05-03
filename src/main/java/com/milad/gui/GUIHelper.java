@@ -2,6 +2,7 @@ package com.milad.gui;
 
 import com.milad.core.Playlist;
 import com.milad.core.Song;
+import com.milad.core.SongColor;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -72,7 +73,7 @@ public class GUIHelper {
                     setText(null);
                 } else {
                     setText(item.getTitle());
-                    // Set song color here
+                    setTextFill(SongColor.fromOrdinal(item.getColor()).getFxColor());
                 }
             }
         });
@@ -88,7 +89,7 @@ public class GUIHelper {
                     setGraphic(null);
                 } else {
                     setText(item.getName());
-                    setGraphic(GUIHelper.getIcon(item.getIconFile()));
+                    setGraphic(getIcon(item.getIconFile()));
                 }
             }
         });
