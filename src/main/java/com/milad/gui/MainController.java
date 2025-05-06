@@ -1,5 +1,6 @@
 package com.milad.gui;
 
+import com.milad.core.MusicPlayer;
 import com.milad.core.Playlist;
 import com.milad.core.Song;
 import com.milad.core.SongColor;
@@ -11,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -31,12 +33,21 @@ public class MainController implements Initializable {
     public VBox manageVBox;
     public ListView<Playlist> managePlaylistsList;
     public ListView<Song> manageSongsList;
+    public ImageView playStateImageView;
+    public ImageView playModeImageView;
 
     private DatabaseHandler db;
     private static final String NEW_PLAYLIST_FXML_PATH = "/fxml/newPlaylistWindow.fxml";
     private static final String NEW_SONG_FXML_PATH = "/fxml/newSongWindow.fxml";
+
     private static final String PLUS_ICON_PATH = "src/main/resources/icons/Plus_Icon.png";
     private static final String MINUS_ICON_PATH = "src/main/resources/icons/Minus_Icon.png";
+
+    private static final String PAUSE_ICON_PATH = "src/main/resources/icons/Pause_Icon.png";
+    private static final String PLAY_ICON_PATH = "src/main/resources/icons/Play_Icon.png";
+    private static final String LOOP_ICON_PATH = "src/main/resources/icons/Repeat_Icon.png";
+    private static final String ONE_LOOP_ICON_PATH = "src/main/resources/icons/Repeat_One_Icon.png";
+    private static final String SHUFFLE_ICON_PATH = "src/main/resources/icons/Shuffle_Icon.png";
 
     private enum mainMode {
         HOME, LIBRARY, SONG;
@@ -63,10 +74,11 @@ public class MainController implements Initializable {
     private ChangeListener<Playlist> mainListener = null;
     private ChangeListener<Playlist> addRListener = null;
 
+    private MusicPlayer mp;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         instance = this;
-
         db = DatabaseHandler.getHandler();
 
         System.out.println(db.getPlaylistsWSongs());
@@ -78,6 +90,8 @@ public class MainController implements Initializable {
 
         loadPlaylistList();
         changeMode(mainMode.HOME);
+
+        initiateMusicPlayer();
     }
 
     private void changeMode(mainMode mainMode) {
@@ -101,6 +115,50 @@ public class MainController implements Initializable {
         changeMode(mainMode.LIBRARY);
         GUIHelper.showRegion(manageSongsList, false);
         GUIHelper.showRegion(managePlaylistsList, false);
+    }
+
+    private void initiateMusicPlayer() {
+        mp = new MusicPlayer();
+        mp.startWithDefaultSettings();
+    }
+
+    public void togglePlayState() {
+        mp.togglePausedState();
+    }
+
+    public void reloadPlayState() {
+        if (mp.disabled()) {
+            GUIHelper.disableImageView(playStateImageView, true);
+            return;
+        } else {
+            GUIHelper.disableImageView(playStateImageView, false);
+        }
+
+        if (mp.isPaused()) {
+            playStateImageView.setImage(GUIHelper.getImage(PLAY_ICON_PATH));
+        } else {
+            playStateImageView.setImage(GUIHelper.getImage(PAUSE_ICON_PATH));
+        }
+    }
+
+    public void togglePlayMode() {
+        mp.togglePlayMode();
+    }
+
+    public void reloadPlayMode() {
+        switch (mp.getPlayMode()) {
+            case ONE_LOOP -> playModeImageView.setImage(GUIHelper.getImage(ONE_LOOP_ICON_PATH));
+            case LOOP -> playModeImageView.setImage(GUIHelper.getImage(LOOP_ICON_PATH));
+            case SHUFFLE -> playModeImageView.setImage(GUIHelper.getImage(SHUFFLE_ICON_PATH));
+        }
+    }
+
+    public void playNext() {
+        mp.playNextSong();
+    }
+
+    public void playPrev() {
+        mp.playPrevSong();
     }
 
     public void loadManagePlaylists() {
@@ -351,15 +409,11 @@ public class MainController implements Initializable {
 
         songsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                playSong(newVal);
+                mp.playNewSong(selectedPlaylist, newVal);
             }
         });
 
         GUIHelper.updateSongsListDisplay(songsList);
-    }
-
-    private void playSong(Song selectedSong) {
-        // TBD
     }
 
     public void openNewPlaylistWindow() {

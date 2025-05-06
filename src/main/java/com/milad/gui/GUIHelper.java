@@ -53,6 +53,24 @@ public class GUIHelper {
         }
     }
 
+    public static Image getImage(String filepath) {
+        try {
+            InputStream stream = new FileInputStream(filepath);
+            return new Image(stream);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void disableImageView (ImageView imageView, boolean disable) {
+        imageView.setDisable(disable);
+        if (disable) {
+            imageView.setOpacity(0.5);
+        } else {
+            imageView.setOpacity(1);
+        }
+    }
+
     public static void giveUserError(String error) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText("User Error");
@@ -115,7 +133,7 @@ public class GUIHelper {
         }
     }
 
-    public static void showRegion(Region region, Boolean show) {
+    public static void showRegion(Region region, boolean show) {
         region.setVisible(show);
         region.setManaged(show);
     }
