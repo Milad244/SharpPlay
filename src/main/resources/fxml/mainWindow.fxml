@@ -56,7 +56,6 @@
                <children>
                   <VBox fx:id="songsVBox" minWidth="550.0" prefHeight="200.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <HBox fx:id="playlistControlsHBox" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" prefWidth="550.0" spacing="10.0" />
                         <ListView fx:id="songsList" minWidth="550.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
@@ -104,15 +103,21 @@
       </HBox>
       <HBox maxHeight="100.0" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <VBox prefHeight="200.0" prefWidth="100.0">
+            <VBox maxWidth="230.0" prefHeight="78.0" prefWidth="210.0">
                <children>
-                  <Label text="Song Name" />
-                  <Label layoutX="10.0" layoutY="10.0" text="Song Author" />
-                  <Label layoutX="10.0" layoutY="27.0" text="Volume" />
-                  <Slider />
+                  <Label fx:id="songNameLbl" prefHeight="26.0" prefWidth="215.0" text="12345123451234512345">
+                     <font>
+                        <Font size="17.0" />
+                     </font></Label>
+                  <Label fx:id="songAuthorLbl" layoutX="10.0" layoutY="10.0" text="Song Author" />
+                  <Label layoutX="10.0" layoutY="27.0" text="Volume">
+                     <font>
+                        <Font size="15.0" />
+                     </font></Label>
+                  <Slider fx:id="volumeSlider" max="1.0" maxWidth="115.0" prefHeight="14.0" prefWidth="115.0" />
                </children>
             </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+            <VBox minWidth="585.0" prefHeight="78.0" prefWidth="591.0" HBox.hgrow="ALWAYS">
                <children>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                      <children>
@@ -143,9 +148,9 @@
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Label text="0:00" />
-                        <Slider prefHeight="14.0" prefWidth="560.0" />
-                        <Label layoutX="69.0" layoutY="23.0" text="2:59" />
+                        <Label fx:id="currentTimeLbl" text="0:00" />
+                        <Slider fx:id="timelineSlider" prefHeight="14.0" prefWidth="537.0" />
+                        <Label fx:id="maxTimeLbl" layoutX="69.0" layoutY="23.0" text="2:59" />
                      </children>
                   </HBox>
                </children>

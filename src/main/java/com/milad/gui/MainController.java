@@ -29,12 +29,17 @@ public class MainController implements Initializable {
     public VBox homeVBox;
     public VBox libraryVBox;
     public VBox songsVBox;
-    public HBox playlistControlsHBox;
     public VBox manageVBox;
     public ListView<Playlist> managePlaylistsList;
     public ListView<Song> manageSongsList;
     public ImageView playStateImageView;
     public ImageView playModeImageView;
+    public Label songNameLbl;
+    public Label songAuthorLbl;
+    public Slider volumeSlider;
+    public Slider timelineSlider;
+    public Label currentTimeLbl;
+    public Label maxTimeLbl;
 
     private DatabaseHandler db;
     private static final String NEW_PLAYLIST_FXML_PATH = "/fxml/newPlaylistWindow.fxml";
@@ -65,7 +70,7 @@ public class MainController implements Initializable {
     private Stage newPlaylistStage;
     private Stage newSongStage;
 
-    // Allowing new playlist/song controllers to access my reload gui methods
+    // Allowing access to my reload gui methods
     private static MainController instance;
     public static MainController getInstance() {
         return instance;
@@ -91,7 +96,7 @@ public class MainController implements Initializable {
         loadPlaylistList();
         changeMode(mainMode.HOME);
 
-        initiateMusicPlayer();
+        initiateMusicControls();
     }
 
     private void changeMode(mainMode mainMode) {
@@ -117,9 +122,34 @@ public class MainController implements Initializable {
         GUIHelper.showRegion(managePlaylistsList, false);
     }
 
-    private void initiateMusicPlayer() {
+    private void initiateMusicControls() {
         mp = new MusicPlayer();
         mp.startWithDefaultSettings();
+        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            mp.setVolume(newVal.doubleValue());
+        });
+        volumeSlider.setValue(0.2);
+
+        timelineSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (timelineSlider.isValueChanging()) { // Only called when user is the one changing the value (not music player)
+                mp.setTimeline(newVal.doubleValue());
+            }
+        });
+        timelineSlider.setDisable(true);
+    }
+
+    public void reloadTimeline() {
+        timelineSlider.setDisable(false);
+        timelineSlider.setMax(mp.getEndTime());
+        maxTimeLbl.setText(MusicPlayer.formatTime(mp.getEndTime()));
+    }
+
+    public void updateTimeline() {
+        timelineSlider.setValue(mp.getTimeline());
+
+        Platform.runLater(() -> {
+            currentTimeLbl.setText(MusicPlayer.formatTime(mp.getTimeline()));
+        });
     }
 
     public void togglePlayState() {
@@ -129,9 +159,13 @@ public class MainController implements Initializable {
     public void reloadPlayState() {
         if (mp.disabled()) {
             GUIHelper.disableImageView(playStateImageView, true);
+            songNameLbl.setText("");
+            songAuthorLbl.setText("");
             return;
         } else {
             GUIHelper.disableImageView(playStateImageView, false);
+            songNameLbl.setText(mp.getCurrentSong().getTitle());
+            songAuthorLbl.setText(mp.getCurrentSong().getAuthor());
         }
 
         if (mp.isPaused()) {
@@ -332,7 +366,6 @@ public class MainController implements Initializable {
         mainListener = (obs, oldVal, newVal) -> {
             if (newVal != null) {
                 changeMode(mainMode.SONG);
-                loadPlaylistOptions(newVal);
                 loadSongList(newVal);
             }
         };
@@ -396,12 +429,6 @@ public class MainController implements Initializable {
         });
     }
 
-    private void loadPlaylistOptions(Playlist selectedPlaylist) {
-        playlistControlsHBox.getChildren().clear();
-
-        // Add stuff like start playlist here (playlist controls)
-    }
-
     private void loadSongList(Playlist selectedPlaylist) {
         songsList.getItems().clear();
 
@@ -410,6 +437,7 @@ public class MainController implements Initializable {
         songsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 mp.playNewSong(selectedPlaylist, newVal);
+                Platform.runLater(() -> songsList.getSelectionModel().clearSelection());
             }
         });
 

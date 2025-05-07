@@ -3,10 +3,13 @@ package com.milad.core;
 import com.milad.gui.MainController;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MusicPlayer {
     private final MainController mainController = MainController.getInstance();
@@ -16,6 +19,12 @@ public class MusicPlayer {
     private ArrayList<Song> playingOrder;
     private boolean paused;
     private double volume;
+
+    private double timeline;
+    private double endTime;
+    private Timer timelineTimer;
+    private TimerTask timelineUpdate;
+
     private PlayMode playMode;
 
     private MediaPlayer mediaPlayer;
@@ -25,7 +34,6 @@ public class MusicPlayer {
     }
 
     public void startWithDefaultSettings() {
-        setVolume(0.3);
         setPausedState(true);
         setPlayMode(PlayMode.ONE_LOOP);
     }
@@ -47,10 +55,10 @@ public class MusicPlayer {
                 playingOrder.add(song);
                 break;
             case LOOP:
-                playingOrder = playlist.getSongs();
+                playingOrder = new ArrayList<>(playlist.getSongs());
                 break;
             case SHUFFLE:
-                playingOrder = playlist.getSongs();
+                playingOrder = new ArrayList<>(playlist.getSongs());
                 Collections.shuffle(playingOrder);
         }
     }
@@ -107,6 +115,45 @@ public class MusicPlayer {
 
         setPausedState(false);
         setVolume(volume);
+        startTimeline();
+    }
+
+    private void startTimeline() {
+        setEndTime();
+
+        if (timelineTimer != null) {
+            timelineTimer.cancel();
+        }
+
+        timelineTimer = new Timer();
+        timelineUpdate = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    timeline = mediaPlayer.getCurrentTime().toSeconds();
+                    mainController.updateTimeline();
+                } catch (Exception e) {
+                    timelineTimer.cancel();
+                    System.out.println("Timer stopped (probably closed program)");
+                }
+            }
+        };
+        timelineTimer.scheduleAtFixedRate(timelineUpdate, 0, 1000);
+    }
+
+    private void setEndTime() {
+        mediaPlayer.setOnReady(() -> {
+            endTime = mediaPlayer.getMedia().getDuration().toSeconds();
+            mainController.reloadTimeline();
+        });
+    }
+
+    public double getEndTime() {
+        return endTime;
+    }
+
+    public Song getCurrentSong() {
+        return currentSong;
     }
 
     private void setPausedState(boolean paused) {
@@ -145,7 +192,24 @@ public class MusicPlayer {
             return;
         }
 
-        mediaPlayer.setVolume(volume);
+        mediaPlayer.setVolume(volume/2); // Scaled volume down
+    }
+
+    public double getVolume() {
+        return volume;
+    }
+
+    public void setTimeline(double time) {
+        if (disabled()) {
+            return;
+        }
+
+        mediaPlayer.seek(Duration.seconds(time));
+        timeline = time;
+    }
+
+    public double getTimeline() {
+        return timeline;
     }
 
     public PlayMode getPlayMode() {
@@ -157,7 +221,7 @@ public class MusicPlayer {
         playModeAction();
     }
 
-    public void togglePlayMode (){
+    public void togglePlayMode(){
         playMode = playMode.toggle();
         playModeAction();
     }
@@ -169,5 +233,12 @@ public class MusicPlayer {
             return;
         }
         setPlayingOrder(currentPlaylist, currentSong);
+    }
+
+    public static String formatTime(double time) {
+        int minutes = (int) time / 60;
+        int seconds = (int) time % 60;
+
+        return String.format("%d:%02d", minutes, seconds);
     }
 }
