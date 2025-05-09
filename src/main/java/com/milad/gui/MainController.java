@@ -80,6 +80,7 @@ public class MainController implements Initializable {
     private ChangeListener<Playlist> addRListener = null;
 
     private MusicPlayer mp;
+    private boolean isUserChangingTimeline = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -87,7 +88,7 @@ public class MainController implements Initializable {
         db = DatabaseHandler.getHandler();
 
         System.out.println(db.getPlaylistsWSongs());
-        System.out.println(db.getSongs());
+        System.out.println(db.getSongsWPlays());
 
         mainMode.HOME.setContainer(homeVBox);
         mainMode.LIBRARY.setContainer(libraryVBox);
@@ -130,11 +131,12 @@ public class MainController implements Initializable {
         });
         volumeSlider.setValue(0.2);
 
-        timelineSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (timelineSlider.isValueChanging()) { // Only called when user is the one changing the value (not music player)
-                mp.setTimeline(newVal.doubleValue());
-            }
+        timelineSlider.setOnMousePressed(event -> isUserChangingTimeline = true);
+        timelineSlider.setOnMouseReleased(event -> {
+            isUserChangingTimeline = false;
+            mp.setTimeline(timelineSlider.getValue());
         });
+
         timelineSlider.setDisable(true);
     }
 
@@ -221,7 +223,7 @@ public class MainController implements Initializable {
         manageSongsList.getItems().clear();
         manageVBox.getChildren().clear();
 
-        ArrayList<Song> songs = db.getSongs();
+        ArrayList<Song> songs = db.getSongsWPlays();
         manageSongsList.getItems().addAll(songs);
 
         manageSongsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
@@ -235,6 +237,18 @@ public class MainController implements Initializable {
 
     private void loadManage(Playlist p) {
         manageVBox.getChildren().clear();
+
+        // Name
+        Label nameLbl = new Label();
+        nameLbl.setText(p.getName());
+        HBox nameHBox = new HBox(nameLbl);
+        nameHBox.setAlignment(Pos.CENTER);
+
+        // Stats
+        Label dateLbl = new Label();
+        dateLbl.setText("Date added: " + p.getAdded());
+        HBox statsHBox = new HBox(dateLbl);
+        statsHBox.setAlignment(Pos.CENTER);
 
         // Rename
         Label renameLbl = new Label();
@@ -256,12 +270,6 @@ public class MainController implements Initializable {
         renameHBox.setAlignment(Pos.CENTER);
         renameHBox.setSpacing(5);
 
-        // Stats
-        Label dateLbl = new Label();
-        dateLbl.setText("Date added: " + p.getAdded());
-        HBox statsHBox = new HBox(dateLbl);
-        statsHBox.setAlignment(Pos.CENTER);
-
         // Delete
         Button deleteBtn = new Button();
         deleteBtn.setText("Delete Playlist");
@@ -276,18 +284,22 @@ public class MainController implements Initializable {
         HBox deleteHBox = new HBox(deleteBtn);
         deleteHBox.setAlignment(Pos.CENTER);
 
-        manageVBox.getChildren().addAll(statsHBox, renameHBox, deleteHBox);
+        manageVBox.getChildren().addAll(nameHBox, statsHBox, renameHBox, deleteHBox);
     }
 
     private void loadManage(Song s) {
         manageVBox.getChildren().clear();
 
         // Stats
+        Label titleLbl = new Label();
+        titleLbl.setText(s.getTitle());
         Label authorLbl = new Label();
         authorLbl.setText("Author: " + s.getAuthor());
         Label dateLbl = new Label();
         dateLbl.setText("Date added: " + s.getAdded());
-        VBox statsVBox = new VBox(authorLbl, dateLbl);
+        Label playLbl = new Label();
+        playLbl.setText("Play count: " + s.getPlayCount());
+        VBox statsVBox = new VBox(titleLbl, authorLbl, dateLbl, playLbl);
         statsVBox.setAlignment(Pos.CENTER);
 
         // Add/Remove

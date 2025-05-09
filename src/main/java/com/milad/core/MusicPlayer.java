@@ -1,11 +1,13 @@
 package com.milad.core;
 
+import com.milad.database.DatabaseHandler;
 import com.milad.gui.MainController;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Timer;
@@ -13,6 +15,7 @@ import java.util.TimerTask;
 
 public class MusicPlayer {
     private final MainController mainController = MainController.getInstance();
+    private final DatabaseHandler db;
 
     private Playlist currentPlaylist;
     private Song currentSong;
@@ -23,13 +26,13 @@ public class MusicPlayer {
     private double timeline;
     private double endTime;
     private Timer timelineTimer;
-    private TimerTask timelineUpdate;
 
     private PlayMode playMode;
 
     private MediaPlayer mediaPlayer;
 
     public MusicPlayer() {
+        db = DatabaseHandler.getHandler();
         playingOrder = new ArrayList<>();
     }
 
@@ -109,6 +112,7 @@ public class MusicPlayer {
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
             public void run() {
+                db.insertSongPlayed(currentSong, new Date(System.currentTimeMillis()));
                 playNextSong();
             }
         });
@@ -126,7 +130,7 @@ public class MusicPlayer {
         }
 
         timelineTimer = new Timer();
-        timelineUpdate = new TimerTask() {
+        TimerTask timelineUpdate = new TimerTask() {
             @Override
             public void run() {
                 try {
@@ -193,10 +197,6 @@ public class MusicPlayer {
         }
 
         mediaPlayer.setVolume(volume/2); // Scaled volume down
-    }
-
-    public double getVolume() {
-        return volume;
     }
 
     public void setTimeline(double time) {

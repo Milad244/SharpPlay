@@ -1,6 +1,7 @@
 package com.milad.core;
 
 import java.sql.Date;
+import java.util.ArrayList;
 
 public class Song {
     private final int id;
@@ -9,6 +10,7 @@ public class Song {
     private final String author;
     private final Date added;
     private final int color;
+    private ArrayList<Date> plays;
 
     public Song(String file, String title, String author, Date added, int color) {
         id = -1;
@@ -17,6 +19,7 @@ public class Song {
         this.author = author;
         this.added = added;
         this.color = color;
+        this.plays = null;
     }
 
     public Song(int id, String file, String title, String author, Date added, int color) {
@@ -26,6 +29,7 @@ public class Song {
         this.author = author;
         this.added = added;
         this.color = color;
+        this.plays = null;
     }
 
     public int getId() {
@@ -52,6 +56,18 @@ public class Song {
         return color;
     }
 
+    public ArrayList<Date> getPlays() {
+        return plays;
+    }
+
+    public void setPlays(ArrayList<Date> plays) {
+        this.plays = plays;
+    }
+
+    public int getPlayCount() {
+        return plays.size();
+    }
+
     @Override
     public String toString() {
         return "Song{" +
@@ -61,6 +77,7 @@ public class Song {
                 ", author='" + author + '\'' +
                 ", added=" + added +
                 ", color=" + color +
+                ", plays=" + plays +
                 '}';
     }
 }

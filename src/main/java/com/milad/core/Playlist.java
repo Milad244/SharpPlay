@@ -10,10 +10,6 @@ public class Playlist {
     private final Date added;
     private ArrayList<Song> songs;
 
-    // Make methods with this later
-    private static final int nameMin = 1;
-    private static final int nameMax = 20;
-
     public Playlist(String name, String iconFile, Date added) {
         id = -1;
         this.name = name;
@@ -28,14 +24,6 @@ public class Playlist {
         this.iconFile = iconFile;
         this.added = added;
         this.songs = null;
-    }
-
-    public Playlist(int id, String name, String iconFile, Date added, ArrayList<Song> songs) {
-        this.id = id;
-        this.name = name;
-        this.iconFile = iconFile;
-        this.added = added;
-        this.songs = songs;
     }
 
     public int getId() {
