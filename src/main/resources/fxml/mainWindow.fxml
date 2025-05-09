@@ -7,7 +7,10 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -15,31 +18,56 @@
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="800.0">
          <children>
-            <VBox prefHeight="52.0" prefWidth="129.0">
+            <HBox maxWidth="500.0" prefHeight="100.0" prefWidth="250.0" spacing="5.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Label text="SharpPlay">
+                  <VBox prefHeight="47.0" prefWidth="78.0">
+                     <children>
+                        <Label layoutX="10.0" layoutY="10.0" prefWidth="124.0" text="Creator">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="15.0" layoutY="10.0" prefWidth="124.0" text="Milad K. Abdi" />
+                     </children>
+                     <padding>
+                        <Insets left="5.0" />
+                     </padding>
+                  </VBox>
+                  <ImageView fitHeight="44.0" fitWidth="59.0" onMouseClicked="#loadHome" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../icons/Home.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets left="-7.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <ImageView fitHeight="44.0" fitWidth="60.0" onMouseClicked="#loadLibrary" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../icons/Library_Icon.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets top="3.0" />
+                     </HBox.margin>
+                  </ImageView>
+                  <ImageView fitHeight="44.0" fitWidth="59.0" onMouseClicked="#loadStats" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../icons/Stats_Icon.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </ImageView>
+               </children>
+            </HBox>
+            <HBox fx:id="sortSongsHBox" alignment="CENTER" prefHeight="47.0" prefWidth="563.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label fx:id="modeLbl" text="Label">
                      <font>
                         <Font size="24.0" />
                      </font>
                   </Label>
-                  <Label layoutX="10.0" layoutY="10.0" prefWidth="124.0" text="Creator: Milad K. Abdi" />
                </children>
-               <padding>
-                  <Insets left="5.0" />
-               </padding>
-            </VBox>
-            <ImageView fitHeight="44.0" fitWidth="59.0" onMouseClicked="#loadHome" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../icons/Home.png" />
-               </image></ImageView>
-            <ImageView fitHeight="44.0" fitWidth="60.0" layoutX="142.0" layoutY="17.0" onMouseClicked="#loadLibrary" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../icons/Library_Icon.png" />
-               </image>
-               <HBox.margin>
-                  <Insets left="5.0" top="3.0" />
-               </HBox.margin>
-            </ImageView>
+            </HBox>
          </children>
          <VBox.margin>
             <Insets />
@@ -61,7 +89,6 @@
                   </VBox>
                   <VBox fx:id="homeVBox" alignment="TOP_CENTER" minWidth="550.0" prefHeight="200.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <Label text="Home" />
                         <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                            <children>
                               <Button mnemonicParsing="false" onAction="#openNewPlaylistWindow" text="Add New Playlist" />
@@ -95,6 +122,21 @@
                               <Insets top="10.0" />
                            </VBox.margin>
                         </VBox>
+                     </children>
+                  </VBox>
+                  <VBox fx:id="statsVBox" alignment="TOP_CENTER" layoutX="10.0" layoutY="309.0" minWidth="550.0" prefHeight="200.0" prefWidth="550.0">
+                     <children>
+                        <GridPane>
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                        </GridPane>
                      </children>
                   </VBox>
                </children>

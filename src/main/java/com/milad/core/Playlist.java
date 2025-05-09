@@ -50,6 +50,10 @@ public class Playlist {
         this.songs = songs;
     }
 
+    public void orderSongs(SongSortType songSortType, boolean ascending) {
+        songs.sort(SongsComparators.getComparator(songSortType, ascending));
+    }
+
     @Override
     public String toString() {
         return "Playlist{" +

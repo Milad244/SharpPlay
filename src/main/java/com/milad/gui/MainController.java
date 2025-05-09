@@ -28,6 +28,7 @@ public class MainController implements Initializable {
     public ListView<Song> songsList;
     public VBox homeVBox;
     public VBox libraryVBox;
+    public VBox statsVBox;
     public VBox songsVBox;
     public VBox manageVBox;
     public ListView<Playlist> managePlaylistsList;
@@ -40,6 +41,8 @@ public class MainController implements Initializable {
     public Slider timelineSlider;
     public Label currentTimeLbl;
     public Label maxTimeLbl;
+    public Label modeLbl;
+    public HBox sortSongsHBox;
 
     private DatabaseHandler db;
     private static final String NEW_PLAYLIST_FXML_PATH = "/fxml/newPlaylistWindow.fxml";
@@ -54,9 +57,18 @@ public class MainController implements Initializable {
     private static final String ONE_LOOP_ICON_PATH = "src/main/resources/icons/Repeat_One_Icon.png";
     private static final String SHUFFLE_ICON_PATH = "src/main/resources/icons/Shuffle_Icon.png";
 
-    private enum mainMode {
-        HOME, LIBRARY, SONG;
-        private Region container;
+    private enum MainMode {
+        HOME("Home"), LIBRARY("Library"), STATS("Statistics"), SONG("");
+        private final String name;
+        private  Region container;
+
+        MainMode(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
 
         public void setContainer(Region container) {
             this.container = container;
@@ -90,37 +102,46 @@ public class MainController implements Initializable {
         System.out.println(db.getPlaylistsWSongs());
         System.out.println(db.getSongsWPlays());
 
-        mainMode.HOME.setContainer(homeVBox);
-        mainMode.LIBRARY.setContainer(libraryVBox);
-        mainMode.SONG.setContainer(songsVBox);
+        MainMode.HOME.setContainer(homeVBox);
+        MainMode.LIBRARY.setContainer(libraryVBox);
+        MainMode.STATS.setContainer(statsVBox);
+        MainMode.SONG.setContainer(songsVBox);
 
         loadPlaylistList();
-        changeMode(mainMode.HOME);
+        changeMode(MainMode.HOME);
 
         initiateMusicControls();
     }
 
-    private void changeMode(mainMode mainMode) {
-        for (mainMode m : mainMode.values()) {
+    private void changeMode(MainMode mainMode) {
+        for (MainMode m : MainMode.values()) {
             GUIHelper.showRegion(m.getContainer(), false);
         }
 
-        // Clears playlist selection if no longer in playlist
-        if (mainMode != mainMode.SONG) {
+        if (mainMode != MainMode.SONG) {
             playlistList.getSelectionModel().clearSelection();
+            GUIHelper.showRegion(modeLbl, true);
+        } else {
+            GUIHelper.showRegion(modeLbl, false);
         }
 
         GUIHelper.showRegion(mainMode.getContainer(), true);
+        modeLbl.setText(mainMode.getName());
     }
 
     public void loadHome() {
-        changeMode(mainMode.HOME);
+        changeMode(MainMode.HOME);
     }
 
     public void loadLibrary() {
-        changeMode(mainMode.LIBRARY);
+        changeMode(MainMode.LIBRARY);
         GUIHelper.showRegion(manageSongsList, false);
         GUIHelper.showRegion(managePlaylistsList, false);
+        manageVBox.getChildren().clear();
+    }
+
+    public void loadStats() {
+        changeMode(MainMode.STATS);
     }
 
     private void initiateMusicControls() {
@@ -377,7 +398,7 @@ public class MainController implements Initializable {
 
         mainListener = (obs, oldVal, newVal) -> {
             if (newVal != null) {
-                changeMode(mainMode.SONG);
+                changeMode(MainMode.SONG);
                 loadSongList(newVal);
             }
         };
@@ -454,6 +475,9 @@ public class MainController implements Initializable {
         });
 
         GUIHelper.updateSongsListDisplay(songsList);
+
+        sortSongsHBox.getChildren().clear();
+        // SORTING BUTTONS AND LOGIC HERE
     }
 
     public void openNewPlaylistWindow() {
