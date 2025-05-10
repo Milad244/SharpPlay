@@ -1,9 +1,6 @@
 package com.milad.gui;
 
-import com.milad.core.MusicPlayer;
-import com.milad.core.Playlist;
-import com.milad.core.Song;
-import com.milad.core.SongColor;
+import com.milad.core.*;
 import com.milad.database.DatabaseHandler;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -11,6 +8,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -19,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.time.Year;
 import java.util.*;
 
 public class MainController implements Initializable {
@@ -41,8 +41,10 @@ public class MainController implements Initializable {
     public Slider timelineSlider;
     public Label currentTimeLbl;
     public Label maxTimeLbl;
-    public Label modeLbl;
     public HBox sortSongsHBox;
+    public Label modeLbl;
+    public HBox modeLblHBox;
+    public LineChart<String, Integer> playsChart;
 
     private DatabaseHandler db;
     private static final String NEW_PLAYLIST_FXML_PATH = "/fxml/newPlaylistWindow.fxml";
@@ -90,9 +92,11 @@ public class MainController implements Initializable {
 
     private ChangeListener<Playlist> mainListener = null;
     private ChangeListener<Playlist> addRListener = null;
+    private ChangeListener<Song> playSongListener = null;
 
     private MusicPlayer mp;
     private boolean isUserChangingTimeline = false;
+    private int statYear = Year.now().getValue();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -120,9 +124,11 @@ public class MainController implements Initializable {
 
         if (mainMode != MainMode.SONG) {
             playlistList.getSelectionModel().clearSelection();
-            GUIHelper.showRegion(modeLbl, true);
+            GUIHelper.showRegion(modeLblHBox, true);
+            GUIHelper.showRegion(sortSongsHBox, false);
         } else {
-            GUIHelper.showRegion(modeLbl, false);
+            GUIHelper.showRegion(modeLblHBox, false);
+            GUIHelper.showRegion(sortSongsHBox, true);
         }
 
         GUIHelper.showRegion(mainMode.getContainer(), true);
@@ -140,8 +146,19 @@ public class MainController implements Initializable {
         manageVBox.getChildren().clear();
     }
 
+    public void setPrevStatYear() {
+        statYear --;
+    }
+
+    public void setNextStatYear() {
+        statYear ++;
+    }
+
     public void loadStats() {
         changeMode(MainMode.STATS);
+
+        XYChart.Series<String, Integer> series = new XYChart.Series();
+        // Create datatype of Months of year and maybe add functionality of getting the values from there
     }
 
     private void initiateMusicControls() {
@@ -259,17 +276,15 @@ public class MainController implements Initializable {
     private void loadManage(Playlist p) {
         manageVBox.getChildren().clear();
 
-        // Name
+        // Stats
         Label nameLbl = new Label();
         nameLbl.setText(p.getName());
-        HBox nameHBox = new HBox(nameLbl);
-        nameHBox.setAlignment(Pos.CENTER);
-
-        // Stats
         Label dateLbl = new Label();
         dateLbl.setText("Date added: " + p.getAdded());
-        HBox statsHBox = new HBox(dateLbl);
-        statsHBox.setAlignment(Pos.CENTER);
+        Label fileLbl = new Label();
+        fileLbl.setText("Icon file path: " + p.getIconFile());
+        VBox statsVBox = new VBox(nameLbl, dateLbl, fileLbl);
+        statsVBox.setAlignment(Pos.CENTER);
 
         // Rename
         Label renameLbl = new Label();
@@ -305,7 +320,7 @@ public class MainController implements Initializable {
         HBox deleteHBox = new HBox(deleteBtn);
         deleteHBox.setAlignment(Pos.CENTER);
 
-        manageVBox.getChildren().addAll(nameHBox, statsHBox, renameHBox, deleteHBox);
+        manageVBox.getChildren().addAll(statsVBox, renameHBox, deleteHBox);
     }
 
     private void loadManage(Song s) {
@@ -320,7 +335,9 @@ public class MainController implements Initializable {
         dateLbl.setText("Date added: " + s.getAdded());
         Label playLbl = new Label();
         playLbl.setText("Play count: " + s.getPlayCount());
-        VBox statsVBox = new VBox(titleLbl, authorLbl, dateLbl, playLbl);
+        Label fileLbl = new Label();
+        fileLbl.setText("Song file path: " + s.getFile());
+        VBox statsVBox = new VBox(titleLbl, authorLbl, dateLbl, playLbl, fileLbl);
         statsVBox.setAlignment(Pos.CENTER);
 
         // Add/Remove
@@ -467,17 +484,34 @@ public class MainController implements Initializable {
 
         songsList.getItems().addAll(selectedPlaylist.getSongs());
 
-        songsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        if (playSongListener != null) {
+            songsList.getSelectionModel().selectedItemProperty().removeListener(playSongListener);
+        }
+
+        playSongListener = (obs, oldVal, newVal) -> {
             if (newVal != null) {
                 mp.playNewSong(selectedPlaylist, newVal);
                 Platform.runLater(() -> songsList.getSelectionModel().clearSelection());
             }
-        });
+        };
+
+        songsList.getSelectionModel().selectedItemProperty().addListener(playSongListener);
 
         GUIHelper.updateSongsListDisplay(songsList);
 
         sortSongsHBox.getChildren().clear();
-        // SORTING BUTTONS AND LOGIC HERE
+        for (SongSortType songSortType : SongSortType.values()) {
+            Button sortBtn = new Button();
+            sortBtn.setText("Sort by " + songSortType.getSortBtnText());
+            sortBtn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    selectedPlaylist.orderSongs(songSortType, selectedPlaylist.getSortSongsAscending());
+                    loadSongList(selectedPlaylist);
+                }
+            });
+            sortSongsHBox.getChildren().add(sortBtn);
+        }
     }
 
     public void openNewPlaylistWindow() {

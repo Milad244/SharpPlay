@@ -4,9 +4,11 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 public class MainJFXLauncher extends Application {
@@ -21,7 +23,14 @@ public class MainJFXLauncher extends Application {
         if (fxmlUrl == null) {
             throw new RuntimeException("FXML file not found");
         }
+        InputStream icon = getClass().getResourceAsStream("/icons/SharpPlay_Icon.png");
+        if (icon == null) {
+            throw new RuntimeException("Icon file not found");
+        }
+
         Parent root = FXMLLoader.load(fxmlUrl);
+        primaryStage.getIcons().add(new Image(icon));
+
         primaryStage.setTitle("SharpPlay");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.setMinWidth(800);

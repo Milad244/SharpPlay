@@ -10,6 +10,8 @@ public class Playlist {
     private final Date added;
     private ArrayList<Song> songs;
 
+    private boolean sortSongsAscending = true;
+
     public Playlist(String name, String iconFile, Date added) {
         id = -1;
         this.name = name;
@@ -52,6 +54,11 @@ public class Playlist {
 
     public void orderSongs(SongSortType songSortType, boolean ascending) {
         songs.sort(SongsComparators.getComparator(songSortType, ascending));
+        sortSongsAscending = !sortSongsAscending;
+    }
+
+    public boolean getSortSongsAscending() {
+        return sortSongsAscending;
     }
 
     @Override
