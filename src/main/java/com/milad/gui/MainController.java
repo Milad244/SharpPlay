@@ -8,7 +8,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.chart.LineChart;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -44,7 +46,6 @@ public class MainController implements Initializable {
     public HBox sortSongsHBox;
     public Label modeLbl;
     public HBox modeLblHBox;
-    public LineChart<String, Integer> playsChart;
 
     private DatabaseHandler db;
     private static final String NEW_PLAYLIST_FXML_PATH = "/fxml/newPlaylistWindow.fxml";
@@ -97,6 +98,7 @@ public class MainController implements Initializable {
     private MusicPlayer mp;
     private boolean isUserChangingTimeline = false;
     private int statYear = Year.now().getValue();
+    private BarChart<String, Number> playBarChart;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -148,17 +150,61 @@ public class MainController implements Initializable {
 
     public void setPrevStatYear() {
         statYear --;
+        loadPlayBarChart();
     }
 
     public void setNextStatYear() {
         statYear ++;
+        loadPlayBarChart();
     }
 
     public void loadStats() {
         changeMode(MainMode.STATS);
+        loadPlayBarChart();
+    }
 
-        XYChart.Series<String, Integer> series = new XYChart.Series();
-        // Create datatype of Months of year and maybe add functionality of getting the values from there
+    private void loadPlayBarChart() {
+        if (playBarChart != null) statsVBox.getChildren().remove(playBarChart);
+
+        LinkedHashMap<Months, Integer> monthsPlaysMap= new LinkedHashMap<>();
+
+        for (Months month : Months.values()) {
+            monthsPlaysMap.put(month, 0);
+        }
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+
+        ArrayList<Song> songs = db.getSongsWPlays();
+
+        for (Song s : songs) {
+            for (Date date : s.getPlays()) {
+                int year = date.getYear() + 1900; // getYear() subtracts 1900 for some reason - so I add it back
+                if (year != statYear) continue;
+
+                Months month = Months.getMonthFromInt(date.getMonth());
+                monthsPlaysMap.put(month, monthsPlaysMap.get(month) + 1);
+            }
+        }
+
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Month");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Plays");
+
+        playBarChart = new BarChart<>(xAxis, yAxis);
+        playBarChart.setTitle(String.valueOf(statYear));
+        playBarChart.setLegendVisible(false);
+
+        for (Map.Entry<Months, Integer> entry : monthsPlaysMap.entrySet()) {
+            Months x = entry.getKey();
+            Number y = entry.getValue();
+            series.getData().add(new XYChart.Data<>(x.getName(), y));
+        }
+
+        playBarChart.getData().add(series);
+
+        statsVBox.getChildren().add(playBarChart);
     }
 
     private void initiateMusicControls() {
