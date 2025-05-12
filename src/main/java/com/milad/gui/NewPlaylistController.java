@@ -1,6 +1,7 @@
 package com.milad.gui;
 
 import com.milad.core.Playlist;
+import com.milad.core.ValueChecks;
 import com.milad.database.DatabaseHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -75,7 +76,15 @@ public class NewPlaylistController implements Initializable{
     }
 
     public void createPlaylist() {
-        String playlistName = playlistNameField.getText(); //add checks to this later
+        String playlistName = playlistNameField.getText();
+        if (!ValueChecks.minTextCheck(playlistName)) {
+            GUIHelper.giveUserError(ValueChecks.minErrorText);
+            return;
+        }
+        if (!ValueChecks.maxTextCheck(playlistName)) {
+            GUIHelper.giveUserError(ValueChecks.maxErrorText);
+            return;
+        }
 
         if (!newPlaylistIconFile.equals(PLAYLIST_DEFAULT_ICON)) { //Skipping if default icon
             File source = new File(newPlaylistIconFile);

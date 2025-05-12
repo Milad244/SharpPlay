@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.milad.gui.MainController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="root" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.milad.gui.MainController">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="800.0">
          <children>
@@ -61,7 +61,7 @@
                <children>
                   <Label fx:id="modeLbl" text="Label">
                      <font>
-                        <Font size="24.0" />
+                        <Font size="32.0" />
                      </font>
                   </Label>
                </children>
@@ -89,21 +89,61 @@
                      <children>
                         <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#openNewPlaylistWindow" text="Add New Playlist" />
-                              <Button mnemonicParsing="false" onAction="#openNewSongWindow" text="Add New Song" />
+                              <Button mnemonicParsing="false" onAction="#openNewPlaylistWindow" text="Add New Playlist">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></Button>
+                              <Button mnemonicParsing="false" onAction="#openNewSongWindow" text="Add New Song">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></Button>
                            </children>
                            <padding>
                               <Insets top="15.0" />
                            </padding>
                         </HBox>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label text="Demo songs can be found here" wrapText="true">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="199.0" layoutY="13.0" onMouseClicked="#openDemoLink" text="https://drive.google.com/drive/folders/1JKmSNRG-hiY1XNmhGUu3FPC8WuW50zOR?usp=sharing" textFill="#1279ff" />
+                              <Label layoutX="199.0" layoutY="38.0" text="1. Add a new song" wrapText="true">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="236.0" layoutY="47.0" text="2. Add a new playlist" wrapText="true">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="231.0" layoutY="55.0" text="3. Go to Library (Books Icon Top Left), manage songs, and add to playlist" textAlignment="CENTER" wrapText="true">
+                                 <font>
+                                    <Font size="20.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="5.0" right="5.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </VBox>
                      </children>
                   </VBox>
                   <VBox fx:id="libraryVBox" alignment="TOP_CENTER" layoutX="10.0" layoutY="239.0" minWidth="550.0" prefHeight="200.0" prefWidth="550.0" VBox.vgrow="ALWAYS">
                      <children>
                         <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#loadManagePlaylists" text="Manage Playlists" />
-                              <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#loadManageSongs" text="Manage Songs" />
+                              <Button mnemonicParsing="false" onAction="#loadManagePlaylists" text="Manage Playlists">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></Button>
+                              <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#loadManageSongs" text="Manage Songs">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></Button>
                            </children>
                            <padding>
                               <Insets top="15.0" />
@@ -126,9 +166,18 @@
                      <children>
                         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#setPrevStatYear" prefHeight="25.0" prefWidth="25.0" text="-" />
-                              <Label text="Plays Over Year" />
-                              <Button layoutX="231.0" layoutY="10.0" mnemonicParsing="false" onAction="#setNextStatYear" prefHeight="25.0" prefWidth="25.0" text="+" />
+                              <Button mnemonicParsing="false" onAction="#setPrevStatYear" prefHeight="35.0" prefWidth="35.0" text="-">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></Button>
+                              <Label text="Plays Each Year">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></Label>
+                              <Button layoutX="231.0" layoutY="10.0" mnemonicParsing="false" onAction="#setNextStatYear" prefHeight="25.0" prefWidth="25.0" text="+">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font></Button>
                            </children>
                         </HBox>
                      </children>
@@ -185,7 +234,10 @@
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
                         <Label fx:id="currentTimeLbl" text="0:00" />
-                        <Slider fx:id="timelineSlider" prefHeight="14.0" prefWidth="537.0" />
+                        <Slider fx:id="timelineSlider" prefHeight="14.0" prefWidth="537.0">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets></Slider>
                         <Label fx:id="maxTimeLbl" layoutX="69.0" layoutY="23.0" text="2:59" />
                      </children>
                   </HBox>

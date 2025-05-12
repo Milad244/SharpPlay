@@ -13,12 +13,16 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.net.URL;
 import java.time.Year;
 import java.util.*;
@@ -94,6 +98,8 @@ public class MainController implements Initializable {
     private ChangeListener<Playlist> mainListener = null;
     private ChangeListener<Playlist> addRListener = null;
     private ChangeListener<Song> playSongListener = null;
+    private ChangeListener<Playlist> managePListener = null;
+    private ChangeListener<Song> manageSListener = null;
 
     private MusicPlayer mp;
     private boolean isUserChangingTimeline = false;
@@ -104,9 +110,6 @@ public class MainController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         instance = this;
         db = DatabaseHandler.getHandler();
-
-        System.out.println(db.getPlaylistsWSongs());
-        System.out.println(db.getSongsWPlays());
 
         MainMode.HOME.setContainer(homeVBox);
         MainMode.LIBRARY.setContainer(libraryVBox);
@@ -196,6 +199,7 @@ public class MainController implements Initializable {
         playBarChart.setTitle(String.valueOf(statYear));
         playBarChart.setLegendVisible(false);
 
+        // Reference: https://stackoverflow.com/questions/1066589/iterate-through-a-hashmap
         for (Map.Entry<Months, Integer> entry : monthsPlaysMap.entrySet()) {
             Months x = entry.getKey();
             Number y = entry.getValue();
@@ -281,6 +285,15 @@ public class MainController implements Initializable {
         mp.playPrevSong();
     }
 
+    public void openDemoLink() {
+        // Reference: https://stackoverflow.com/questions/10967451/open-a-link-in-browser-with-java-button
+        try {
+            Desktop.getDesktop().browse(new URL("https://drive.google.com/drive/folders/1JKmSNRG-hiY1XNmhGUu3FPC8WuW50zOR?usp=sharing").toURI());
+        } catch (Exception e) {
+            System.out.println("Could not open link");
+        }
+    }
+
     public void loadManagePlaylists() {
         GUIHelper.showRegion(manageSongsList, false);
         GUIHelper.showRegion(managePlaylistsList, true);
@@ -291,11 +304,17 @@ public class MainController implements Initializable {
         ArrayList<Playlist> playlists = db.getPlaylistsWSongs();
         managePlaylistsList.getItems().addAll(playlists);
 
-        managePlaylistsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        if (managePListener != null) {
+            managePlaylistsList.getSelectionModel().selectedItemProperty().removeListener(managePListener);
+        }
+
+        managePListener = (obs, oldVal, newVal) -> {
             if (newVal != null) {
                 loadManage(newVal);
             }
-        });
+        };
+
+        managePlaylistsList.getSelectionModel().selectedItemProperty().addListener(managePListener);
 
         GUIHelper.updatePlaylistListDisplay(managePlaylistsList);
     }
@@ -310,11 +329,17 @@ public class MainController implements Initializable {
         ArrayList<Song> songs = db.getSongsWPlays();
         manageSongsList.getItems().addAll(songs);
 
-        manageSongsList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+        if (manageSListener != null) {
+            manageSongsList.getSelectionModel().selectedItemProperty().removeListener(manageSListener);
+        }
+
+        manageSListener = (obs, oldVal, newVal) -> {
             if (newVal != null) {
                 loadManage(newVal);
             }
-        });
+        };
+
+        manageSongsList.getSelectionModel().selectedItemProperty().addListener(manageSListener);
 
         GUIHelper.updateSongsListDisplay(manageSongsList);
     }
@@ -414,6 +439,7 @@ public class MainController implements Initializable {
         for (SongColor c : SongColor.values()) {
             Button changeColorBtn = new Button();
             changeColorBtn.setText(c.getColorName());
+            changeColorBtn.setTextFill(c.getFxColor());
             changeColorBtn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {

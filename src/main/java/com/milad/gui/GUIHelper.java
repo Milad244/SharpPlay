@@ -83,6 +83,7 @@ public class GUIHelper {
     }
 
     public static void updateSongsListDisplay(ListView<Song> songListView) {
+        songListView.getStyleClass().add("song-listView");
         songListView.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Song item, boolean empty) {
@@ -118,10 +119,15 @@ public class GUIHelper {
         if (fxmlUrl == null) {
             throw new RuntimeException("FXML file not found");
         }
+        URL cssUrl = GUIHelper.class.getResource("/css/style.css");
+        if (cssUrl == null) {
+            throw new RuntimeException("CSS file not found");
+        }
         try {
             Parent parent = FXMLLoader.load(fxmlUrl);
             newStage.setTitle(windowTitle);
             newStage.setScene(new Scene(parent));
+            newStage.getScene().getStylesheets().add(cssUrl.toExternalForm());
             newStage.setMinWidth(width);
             newStage.setMinHeight(height);
             newStage.show();

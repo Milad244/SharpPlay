@@ -2,10 +2,12 @@ package com.milad.gui;
 
 import com.milad.core.Song;
 import com.milad.core.SongColor;
+import com.milad.core.ValueChecks;
 import com.milad.database.DatabaseHandler;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,8 +15,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
 import java.net.URL;
@@ -26,6 +30,7 @@ public class NewSongController implements Initializable{
     public TextField songNameField;
     public TextField songAuthorField;
     public VBox newColorVBox;
+    public Button selectSongBtn;
 
     private DatabaseHandler db;
     private String newSongFile;
@@ -43,20 +48,25 @@ public class NewSongController implements Initializable{
     private void loadNewSongColor() {
         Label colorLbl = new Label();
         colorLbl.setText("Song Color");
+        colorLbl.setFont(new Font(17.5));
         HBox colorBtnsHBox = new HBox();
         for (SongColor c : SongColor.values()) {
             Button changeColorBtn = new Button();
             changeColorBtn.setText(c.getColorName());
+            changeColorBtn.setTextFill(c.getFxColor());
+            changeColorBtn.setFont(new Font(16));
             changeColorBtn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     newSongColor = c.ordinal();
+                    colorLbl.setTextFill(c.getFxColor());
                 }
             });
             colorBtnsHBox.getChildren().add(changeColorBtn);
         }
         colorBtnsHBox.setAlignment(Pos.CENTER);
         colorBtnsHBox.setSpacing(5);
+        colorBtnsHBox.setPadding(new Insets(5));
         newColorVBox.getChildren().addAll(colorLbl, colorBtnsHBox);
     }
 
@@ -77,12 +87,32 @@ public class NewSongController implements Initializable{
         }
 
         newSongFile = path;
+        selectSongBtn.setText("Selected From Files");
+
+        String songNameGuess = file.getName();
+        // Reference: https://stackoverflow.com/questions/941272/how-do-i-trim-a-file-extension-from-a-string-in-java
+        songNameGuess = FilenameUtils.removeExtension(songNameGuess);
+        if (songNameGuess.length() > ValueChecks.textMax) {
+            songNameGuess = songNameGuess.substring(0, ValueChecks.textMax);
+        }
+        songNameField.setText(songNameGuess);
     }
 
     public void createSong() {
-        //add checks to this later
         String songName = songNameField.getText();
         String songAuthor = songAuthorField.getText();
+        if (!ValueChecks.minTextCheck(songName) || !ValueChecks.minTextCheck(songAuthor)) {
+            GUIHelper.giveUserError(ValueChecks.minErrorText);
+            return;
+        }
+        if (!ValueChecks.maxTextCheck(songName) || !ValueChecks.maxTextCheck(songAuthor) ) {
+            GUIHelper.giveUserError(ValueChecks.maxErrorText);
+            return;
+        }
+        if (newSongFile == null) {
+            GUIHelper.giveUserError("Did not select song file");
+            return;
+        }
 
         // Copying song to local directory if it is not already there
         File source = new File(newSongFile);

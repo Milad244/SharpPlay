@@ -1,0 +1,44 @@
+.root{
+    -fx-background-color: #e8e8e8;
+}
+
+.song-listView .list-cell{
+    -fx-font-size: 20px;
+}
+.list-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #eb7734;
+    -fx-border-width: 2px;
+    -fx-padding: 5px;
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0;
+}
+.list-cell {
+    -fx-font-size: 22px;
+    -fx-background-color: transparent;
+    -fx-padding: 4px;
+}
+.list-cell:hover {
+    -fx-background-color: #fff8eb;
+}
+
+.list-cell:selected {
+    -fx-text-fill: inherit;
+    -fx-background-color: #e8e8ff;
+}
+.list-cell:empty:hover {
+    -fx-background-color: transparent;
+}
+
+.button {
+    -fx-cursor: hand;
+    -fx-background-color: #FAFAFA;
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-color: linear-gradient(#ff4df3, #ff4df3);
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+.button:hover {
+    -fx-border-width: 0 0 3px 0;
+    -fx-border-color: linear-gradient(to bottom, #ff4df3, #ff4df3);
+}

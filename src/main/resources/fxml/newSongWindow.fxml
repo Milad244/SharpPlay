@@ -8,45 +8,51 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.milad.gui.NewSongController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.milad.gui.NewSongController">
    <children>
+      <VBox alignment="CENTER" prefHeight="100.0" prefWidth="640.0" spacing="20.0">
+         <children>
+            <Label text="Select Song">
+               <font>
+                  <Font size="28.0" />
+               </font></Label>
+            <VBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="640.0">
+               <children>
+                  <Button fx:id="selectSongBtn" mnemonicParsing="false" onAction="#selectSongFile" text="Select From Files">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Button>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
       <HBox alignment="CENTER" prefHeight="74.0" prefWidth="800.0" spacing="5.0">
          <children>
-            <Label text="Song Name">
+            <Label text="Song Name ">
                <font>
-                  <Font size="16.0" />
+                  <Font size="18.0" />
                </font></Label>
-            <TextField fx:id="songNameField" />
+            <TextField fx:id="songNameField" prefHeight="25.0" prefWidth="200.0" />
          </children>
       </HBox>
       <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="74.0" prefWidth="800.0" spacing="5.0">
          <children>
             <Label text="Song Author">
                <font>
-                  <Font size="16.0" />
+                  <Font size="18.0" />
                </font>
             </Label>
-            <TextField fx:id="songAuthorField" />
+            <TextField fx:id="songAuthorField" prefHeight="25.0" prefWidth="200.0" />
          </children>
       </HBox>
-      <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
-         <children>
-            <Label text="Song">
-               <font>
-                  <Font size="20.0" />
-               </font></Label>
-            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#selectSongFile" text="Select From Files" />
-               </children>
-            </VBox>
-         </children>
-      </VBox>
-      <VBox fx:id="newColorVBox" alignment="TOP_CENTER" layoutX="10.0" layoutY="84.0" prefHeight="140.0" prefWidth="640.0" />
+      <VBox fx:id="newColorVBox" alignment="TOP_CENTER" layoutX="10.0" layoutY="84.0" prefHeight="100.0" prefWidth="640.0" />
       <Button mnemonicParsing="false" onAction="#createSong" text="Create Song">
          <VBox.margin>
             <Insets bottom="5.0" />
          </VBox.margin>
+         <font>
+            <Font size="16.0" />
+         </font>
       </Button>
    </children>
 </VBox>

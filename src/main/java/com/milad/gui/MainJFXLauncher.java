@@ -27,12 +27,18 @@ public class MainJFXLauncher extends Application {
         if (icon == null) {
             throw new RuntimeException("Icon file not found");
         }
+        // Reference: https://stackoverflow.com/questions/37499885/javafx-css-class-style
+        URL cssUrl = getClass().getResource("/css/style.css");
+        if (cssUrl == null) {
+            throw new RuntimeException("CSS file not found");
+        }
 
         Parent root = FXMLLoader.load(fxmlUrl);
         primaryStage.getIcons().add(new Image(icon));
 
         primaryStage.setTitle("SharpPlay");
         primaryStage.setScene(new Scene(root, 800, 600));
+        primaryStage.getScene().getStylesheets().add(cssUrl.toExternalForm());
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.show();
