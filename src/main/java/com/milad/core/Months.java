@@ -21,7 +21,7 @@ public enum Months {
 
     /**
      * Constructor for a month.
-     * @param name name of the month, as a string
+     * @param name the name of the month, as a string
      */
     Months(String name) {
         this.name = name;

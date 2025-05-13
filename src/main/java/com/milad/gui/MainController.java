@@ -28,6 +28,9 @@ import java.net.URL;
 import java.time.Year;
 import java.util.*;
 
+/**
+ * The controller for the main window. This controls the entire app aside from the creation of new playlists and songs.
+ */
 public class MainController implements Initializable {
 
     public ListView<Playlist> playlistList;
@@ -65,6 +68,9 @@ public class MainController implements Initializable {
     private static final String ONE_LOOP_ICON_PATH = "src/main/resources/icons/Repeat_One_Icon.png";
     private static final String SHUFFLE_ICON_PATH = "src/main/resources/icons/Shuffle_Icon.png";
 
+    /**
+     * An enum that represents what mode of our app we are in.
+     */
     private enum MainMode {
         HOME("Home"), LIBRARY("Library"), STATS("Statistics"), SONG("");
         private final String name;
@@ -107,6 +113,10 @@ public class MainController implements Initializable {
     private int statYear = Year.now().getValue();
     private BarChart<String, Number> playBarChart;
 
+    /**
+     * Sets its instances, get the DB, adds all the containers to the MainMode enum and starts on the mode Home.
+     * Also, loads the playlists and initiates the music playback controls.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         instance = this;
@@ -123,6 +133,11 @@ public class MainController implements Initializable {
         initiateMusicControls();
     }
 
+    /**
+     * Changes the apps main mode, disabling all the other mode containers and updating the mode title.
+     * If switching to a mode other than songs, clears the song sorting buttons and playlist selection.
+     * @param mainMode
+     */
     private void changeMode(MainMode mainMode) {
         for (MainMode m : MainMode.values()) {
             GUIHelper.showRegion(m.getContainer(), false);
@@ -141,10 +156,16 @@ public class MainController implements Initializable {
         modeLbl.setText(mainMode.getName());
     }
 
+    /**
+     * Changes the main mode to home. Home is where we add new songs/playlists and where the instructions for the program are.
+     */
     public void loadHome() {
         changeMode(MainMode.HOME);
     }
 
+    /**
+     * Changes the main mode to library. Library is where we manage songs/playlists.
+     */
     public void loadLibrary() {
         changeMode(MainMode.LIBRARY);
         GUIHelper.showRegion(manageSongsList, false);
@@ -152,23 +173,37 @@ public class MainController implements Initializable {
         manageVBox.getChildren().clear();
     }
 
-    public void setPrevStatYear() {
-        statYear --;
-        loadPlayBarChart();
-    }
-
-    public void setNextStatYear() {
-        statYear ++;
-        loadPlayBarChart();
-    }
-
+    /**
+     * Changes the main mode to stats and loads the play count bar chart.
+     */
     public void loadStats() {
         changeMode(MainMode.STATS);
         loadPlayBarChart();
     }
 
+    /**
+     * Changes the play count year for the barchart to the previous.
+     */
+    public void setPrevStatYear() {
+        statYear --;
+        loadPlayBarChart();
+    }
+
+    /**
+     * Changes the play count year for the barchart to the next.
+     */
+    public void setNextStatYear() {
+        statYear ++;
+        loadPlayBarChart();
+    }
+
+    /**
+     * Loads the play count bar chart for the year of the statYear field. First, we create a hashmap of months for the year.
+     * Then, we take all the songs and their plays. Next, we iterate through them, adding their plays to their respective months.
+     * Finally, we create and update the bar chart.
+     */
     private void loadPlayBarChart() {
-        if (playBarChart != null) statsVBox.getChildren().remove(playBarChart);
+        if (playBarChart != null) statsVBox.getChildren().remove(playBarChart); // To ensure we do not create duplicates
 
         LinkedHashMap<Months, Integer> monthsPlaysMap= new LinkedHashMap<>();
 
@@ -212,6 +247,9 @@ public class MainController implements Initializable {
         statsVBox.getChildren().add(playBarChart);
     }
 
+    /**
+     * Initiates our Music Player with its default settings and music controls like volume and timeline.
+     */
     private void initiateMusicControls() {
         mp = new MusicPlayer();
         mp.startWithDefaultSettings();
@@ -229,12 +267,18 @@ public class MainController implements Initializable {
         timelineSlider.setDisable(true);
     }
 
+    /**
+     * Reloads the timeline for the next song with the new song's end time.
+     */
     public void reloadTimeline() {
         timelineSlider.setDisable(false);
         timelineSlider.setMax(mp.getEndTime());
         maxTimeLbl.setText(MusicPlayer.formatTime(mp.getEndTime()));
     }
 
+    /**
+     * Updates the timeline and current time label. Called from the music player each second of the song.
+     */
     public void updateTimeline() {
         timelineSlider.setValue(mp.getTimeline());
 
@@ -243,10 +287,16 @@ public class MainController implements Initializable {
         });
     }
 
+    /**
+     * Toggles between pausing and un-pausing the song in the music player.
+     */
     public void togglePlayState() {
         mp.togglePausedState();
     }
 
+    /**
+     * Reloads the play state icons based on the music player's playing state.
+     */
     public void reloadPlayState() {
         if (mp.disabled()) {
             GUIHelper.disableImageView(playStateImageView, true);
@@ -266,10 +316,16 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Toggles the play mode of the song in the music player.
+     */
     public void togglePlayMode() {
         mp.togglePlayMode();
     }
 
+    /**
+     * Reloads the play mode icons based on the music player's play mode state.
+     */
     public void reloadPlayMode() {
         switch (mp.getPlayMode()) {
             case ONE_LOOP -> playModeImageView.setImage(GUIHelper.getImage(ONE_LOOP_ICON_PATH));
@@ -278,14 +334,23 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Plays the next song in the music player.
+     */
     public void playNext() {
         mp.playNextSong();
     }
 
+    /**
+     * plays the previous song in the music player.
+     */
     public void playPrev() {
         mp.playPrevSong();
     }
 
+    /**
+     * Opens the Google Drive folder with the demo songs and demo playlist icons in the user's browser.
+     */
     public void openDemoLink() {
         // Reference: https://stackoverflow.com/questions/10967451/open-a-link-in-browser-with-java-button
         try {
@@ -295,6 +360,9 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Loads the managing of playlists.
+     */
     public void loadManagePlaylists() {
         GUIHelper.showRegion(manageSongsList, false);
         GUIHelper.showRegion(managePlaylistsList, true);
@@ -305,6 +373,7 @@ public class MainController implements Initializable {
         ArrayList<Playlist> playlists = db.getPlaylistsWSongs();
         managePlaylistsList.getItems().addAll(playlists);
 
+        // I do this throughout my loading of GUI to ensure I do not create multiple listeners because even after an item is clear, it's listener still exists.
         if (managePListener != null) {
             managePlaylistsList.getSelectionModel().selectedItemProperty().removeListener(managePListener);
         }
@@ -320,6 +389,9 @@ public class MainController implements Initializable {
         GUIHelper.updatePlaylistListDisplay(managePlaylistsList);
     }
 
+    /**
+     * Loads the managing of songs.
+     */
     public void loadManageSongs() {
         GUIHelper.showRegion(manageSongsList, true);
         GUIHelper.showRegion(managePlaylistsList, false);
@@ -345,6 +417,10 @@ public class MainController implements Initializable {
         GUIHelper.updateSongsListDisplay(manageSongsList);
     }
 
+    /**
+     * Loads the managing options for a given playlist. The user can see the information of the playlist, rename it, and delete it.
+     * @param p the playlist to be managed, as a Playlist type
+     */
     private void loadManage(Playlist p) {
         manageVBox.getChildren().clear();
 
@@ -395,6 +471,11 @@ public class MainController implements Initializable {
         manageVBox.getChildren().addAll(statsVBox, renameHBox, deleteHBox);
     }
 
+    /**
+     * Loads the managing options for a given song. The user can see the information of the song,
+     * add/remove it from various playlists, change its color, and delete it.
+     * @param s the song to be managed, as a Song type
+     */
     private void loadManage(Song s) {
         manageVBox.getChildren().clear();
 
@@ -473,6 +554,9 @@ public class MainController implements Initializable {
         manageVBox.getChildren().addAll(statsVBox, addRHBox, colorVBox, deleteHBox);
     }
 
+    /**
+     * Loads the all the playlists into the playlist listview, and adds the listener to load its songs as well.
+     */
     public void loadPlaylistList() {
         GUIHelper.showRegion(playlistAddRList, false);
         GUIHelper.showRegion(playlistList, true);
@@ -497,6 +581,12 @@ public class MainController implements Initializable {
         GUIHelper.updatePlaylistListDisplay(playlistList);
     }
 
+    /**
+     * Checks if a given song exists in a given playlist.
+     * @param playlist the playlist to check if the song exists in it, as a Playlist type
+     * @param song the song to check if it's in the playlist, as a Song type
+     * @return true if the song exists in the playlist, false if it does not exist in the playlist
+     */
     private Boolean songExists(Playlist playlist, Song song) {
         for (Song s : playlist.getSongs()) {
             if (s.getId() == song.getId()) {
@@ -506,6 +596,11 @@ public class MainController implements Initializable {
         return false;
     }
 
+    /**
+     * Loads a plus icon on playlist's that can be added to, loads a minus icon on playlist's that can be removed from.
+     * Also, adds the listeners and logic for the adding/removing to work.
+     * @param addRSong the song to be added/removed from various playlists, as a Song type
+     */
     private void loadAddRPlaylistList(Song addRSong) {
         GUIHelper.showRegion(playlistList, false);
         GUIHelper.showRegion(playlistAddRList, true);
@@ -552,6 +647,11 @@ public class MainController implements Initializable {
         });
     }
 
+    /**
+     * Loads the songs from a user selected playlist and adds listeners and logic to play the song.
+     * Also, adds the sorting buttons to sort the songs in the playlist.
+     * @param selectedPlaylist the playlist the user selected, as a Playlist type
+     */
     private void loadSongList(Playlist selectedPlaylist) {
         songsList.getItems().clear();
 
@@ -580,6 +680,7 @@ public class MainController implements Initializable {
             sortBtn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
+                    // Sorting toggles between ascending and descending order for a given playlist
                     selectedPlaylist.orderSongs(songSortType, selectedPlaylist.getSortSongsAscending());
                     loadSongList(selectedPlaylist);
                 }
@@ -588,6 +689,9 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Opens the new playlist window if it isn't already open, otherwise, it brings the existing window to the front.
+     */
     public void openNewPlaylistWindow() {
         if (newPlaylistStage == null || !newPlaylistStage.isShowing()) {
             newPlaylistStage = new Stage();
@@ -597,6 +701,9 @@ public class MainController implements Initializable {
         }
     }
 
+    /**
+     * Opens the new song window if it isn't already open, otherwise, it brings the existing window to the front.
+     */
     public void openNewSongWindow() {
         if (newSongStage == null || !newSongStage.isShowing()) {
             newSongStage = new Stage();

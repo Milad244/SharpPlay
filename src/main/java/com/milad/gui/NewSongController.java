@@ -25,6 +25,9 @@ import java.net.URL;
 import java.sql.Date;
 import java.util.ResourceBundle;
 
+/**
+ * The controller for the new song window (the window responsible for letting the user add songs to the program).
+ */
 public class NewSongController implements Initializable{
 
     public TextField songNameField;
@@ -37,6 +40,9 @@ public class NewSongController implements Initializable{
     private int newSongColor;
     private static final String SONG_FILE_DIR = "User_Data/Songs";
 
+    /**
+     * Gets the database and sets default configurations for a new song.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         db = DatabaseHandler.getHandler();
@@ -45,6 +51,9 @@ public class NewSongController implements Initializable{
         loadNewSongColor();
     }
 
+    /**
+     * Adds and displays all the buttons for the user to choose their new song's color.
+     */
     private void loadNewSongColor() {
         Label colorLbl = new Label();
         colorLbl.setText("Song Color");
@@ -70,6 +79,10 @@ public class NewSongController implements Initializable{
         newColorVBox.getChildren().addAll(colorLbl, colorBtnsHBox);
     }
 
+    /**
+     * Lets the user select a file from their computer, checks if the file is allowed, and inputs a suggested song name based on the file name.
+     * If the file is not allowed they will be given an error and allowed to try again.
+     */
     public void selectSongFile() {
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(GUIHelper.getStage(songNameField));
@@ -98,6 +111,11 @@ public class NewSongController implements Initializable{
         songNameField.setText(songNameGuess);
     }
 
+    /**
+     * Creates a new song based on the user's chosen configurations. If the user has given inappropriate values,
+     * they will be given an error and allowed to modify their new song configuration accordingly.
+     * If new song is allowed, it will copy the song file to the user data local directory if it's not already there.
+     */
     public void createSong() {
         String songName = songNameField.getText();
         String songAuthor = songAuthorField.getText();

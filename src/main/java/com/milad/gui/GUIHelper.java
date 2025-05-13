@@ -20,7 +20,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * Static class to help with reused GUI actions.
+ */
 public class GUIHelper {
+    /**
+     * Displays an icon from its file path in a given imageView.
+     * @param imageView the imageView to display the icon on, as an imageView
+     * @param filepath the file path of the icon, as a String
+     */
     public static void displayIcon(ImageView imageView, String filepath) {
         try {
             InputStream stream = new FileInputStream(filepath);
@@ -35,6 +43,11 @@ public class GUIHelper {
         }
     }
 
+    /**
+     * Gets an icon from its file path, puts it in an imageView and returns it.
+     * @param filepath the file path of the icon, as a String
+     * @return the imageView with the icon, as an imageView
+     */
     public static ImageView getIcon(String filepath) {
         try {
             //Getting image and putting it into imageview
@@ -53,6 +66,11 @@ public class GUIHelper {
         }
     }
 
+    /**
+     * Gets an image stream using its file path and returns an Image with that stream.
+     * @param filepath the file path of the image, as a String
+     * @return the image with the image stream, as an Image
+     */
     public static Image getImage(String filepath) {
         try {
             InputStream stream = new FileInputStream(filepath);
@@ -62,6 +80,11 @@ public class GUIHelper {
         }
     }
 
+    /**
+     * Enables or disables an imageView both functionally and visibly.
+     * @param imageView the imageView to modify, as an imageView
+     * @param disable true to disable (and dim) the image, false to enable (and restore the opacity).
+     */
     public static void disableImageView (ImageView imageView, boolean disable) {
         imageView.setDisable(disable);
         if (disable) {
@@ -71,6 +94,10 @@ public class GUIHelper {
         }
     }
 
+    /**
+     * Creates an error alert with a given error message.
+     * @param error the error message, as a String
+     */
     public static void giveUserError(String error) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setHeaderText("User Error");
@@ -78,10 +105,19 @@ public class GUIHelper {
         alert.showAndWait();
     }
 
+    /**
+     * Gets the stage that a region is from.
+     * @param region the region we want the stage from
+     * @return the stage from the given region
+     */
     public static Stage getStage(Region region) {
         return (Stage) region.getScene().getWindow();
     }
 
+    /**
+     * Updates a listview of songs visually. For a non-null song, it renames it to the song's title and sets its given color.
+     * @param songListView the listview of songs to update visually, as a ListView of Song type
+     */
     public static void updateSongsListDisplay(ListView<Song> songListView) {
         songListView.getStyleClass().add("song-listView");
         songListView.setCellFactory(param -> new ListCell<>() {
@@ -98,6 +134,10 @@ public class GUIHelper {
         });
     }
 
+     /**
+     * Updates a listview of playlists visually. For a non-null playlist, it renames it to the playlist's name and sets its given icon.
+     * @param playlistListView the listview of playlists to update visually, as a ListView of Playlist type
+     */
     public static void updatePlaylistListDisplay(ListView<Playlist> playlistListView) {
         playlistListView.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -114,6 +154,14 @@ public class GUIHelper {
         });
     }
 
+    /**
+     * Opens a new window.
+     * @param fxmlPath the fxml file path of the new window, as a String
+     * @param newStage the stage of the new window, as a Stage
+     * @param windowTitle the title of the new window, as a String
+     * @param width the width of the new window, as a double
+     * @param height the height of the new window, as a double
+     */
     public static void openNewWindow(String fxmlPath, Stage newStage, String windowTitle, double width, double height) {
         URL fxmlUrl = GUIHelper.class.getResource(fxmlPath);
         if (fxmlUrl == null) {
@@ -139,6 +187,11 @@ public class GUIHelper {
         }
     }
 
+    /**
+     * Shows or doesn't show a region.
+     * @param region the region to show or not show
+     * @param show true to show, false to not show
+     */
     public static void showRegion(Region region, boolean show) {
         region.setVisible(show);
         region.setManaged(show);
