@@ -32,7 +32,7 @@
                <font>
                   <Font size="18.0" />
                </font></Label>
-            <TextField fx:id="songNameField" prefHeight="25.0" prefWidth="200.0" />
+            <TextField fx:id="songNameField" prefHeight="25.0" prefWidth="275.0" />
          </children>
       </HBox>
       <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="74.0" prefWidth="800.0" spacing="5.0">
@@ -42,7 +42,7 @@
                   <Font size="18.0" />
                </font>
             </Label>
-            <TextField fx:id="songAuthorField" prefHeight="25.0" prefWidth="200.0" />
+            <TextField fx:id="songAuthorField" prefHeight="25.0" prefWidth="275.0" />
          </children>
       </HBox>
       <VBox fx:id="newColorVBox" alignment="TOP_CENTER" layoutX="10.0" layoutY="84.0" prefHeight="100.0" prefWidth="640.0" />

@@ -155,7 +155,7 @@
                               <ListView fx:id="manageSongsList" layoutX="10.0" layoutY="10.0" minWidth="550.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
-                        <VBox fx:id="manageVBox" alignment="TOP_CENTER" prefHeight="106.0" prefWidth="550.0" spacing="5.0">
+                        <VBox fx:id="manageVBox" alignment="TOP_CENTER" prefHeight="106.0" prefWidth="550.0" spacing="5.0" styleClass="manage">
                            <VBox.margin>
                               <Insets top="10.0" />
                            </VBox.margin>
@@ -188,9 +188,9 @@
       </HBox>
       <HBox maxHeight="100.0" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <VBox maxWidth="230.0" prefHeight="78.0" prefWidth="210.0">
+            <VBox maxWidth="400.0" prefHeight="78.0" prefWidth="210.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Label fx:id="songNameLbl" prefHeight="26.0" prefWidth="215.0" text="12345123451234512345">
+                  <Label fx:id="songNameLbl" prefHeight="26.0" prefWidth="300.0" text="12345123451234512345" VBox.vgrow="ALWAYS">
                      <font>
                         <Font size="17.0" />
                      </font></Label>

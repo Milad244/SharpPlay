@@ -42,3 +42,7 @@
     -fx-border-width: 0 0 3px 0;
     -fx-border-color: linear-gradient(to bottom, #ff4df3, #ff4df3);
 }
+
+.manage {
+    -fx-font-size: 16px;
+}

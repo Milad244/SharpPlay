@@ -17,7 +17,7 @@
                <font>
                   <Font size="20.0" />
                </font></Label>
-            <TextField fx:id="playlistNameField" prefHeight="25.0" prefWidth="200.0" />
+            <TextField fx:id="playlistNameField" prefHeight="25.0" prefWidth="275.0" />
          </children>
       </HBox>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">

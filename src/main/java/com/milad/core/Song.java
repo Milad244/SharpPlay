@@ -3,6 +3,9 @@ package com.milad.core;
 import java.sql.Date;
 import java.util.ArrayList;
 
+/**
+ * Represents a Song.
+ */
 public class Song {
     private final int id;
     private final String file;
@@ -12,6 +15,14 @@ public class Song {
     private final int color;
     private ArrayList<Date> plays;
 
+    /**
+     * Constructor for Song without its id or plays.
+     * @param file the filepath of the song, as a String
+     * @param title the title of the song, as a String
+     * @param author the author of the song, as a String
+     * @param added the date this song was added, as a Date
+     * @param color the color of the song, as an int that represents the Color enum ordinal
+     */
     public Song(String file, String title, String author, Date added, int color) {
         id = -1;
         this.file = file;
@@ -22,6 +33,15 @@ public class Song {
         this.plays = null;
     }
 
+    /**
+     * Constructor for Song without its plays.
+     * @param id the id of the song, as an int
+     * @param file the filepath of the song, as a String
+     * @param title the title of the song, as a String
+     * @param author the author of the song, as a String
+     * @param added the date this song was added, as a Date
+     * @param color the color of the song, as an int that represents the Color enum ordinal
+     */
     public Song(int id, String file, String title, String author, Date added, int color) {
         this.id = id;
         this.file = file;
@@ -64,6 +84,10 @@ public class Song {
         this.plays = plays;
     }
 
+    /**
+     * Gets the number of time this song was played.
+     * @return the play count of the song, as an int
+     */
     public int getPlayCount() {
         return plays.size();
     }

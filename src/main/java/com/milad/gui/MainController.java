@@ -20,6 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -413,7 +414,7 @@ public class MainController implements Initializable {
 
         // Add/Remove
         Button addRBtn = new Button();
-        addRBtn.setText("Add/Remove Song From Playlists");
+        addRBtn.setText("Add/Remove From Playlists");
         addRBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -421,7 +422,7 @@ public class MainController implements Initializable {
             }
         });
         Button finishedBtn = new Button();
-        finishedBtn.setText("Finished Adding/Removing Songs From Playlists");
+        finishedBtn.setText("Finished Adding/Removing");
         finishedBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -574,6 +575,7 @@ public class MainController implements Initializable {
         sortSongsHBox.getChildren().clear();
         for (SongSortType songSortType : SongSortType.values()) {
             Button sortBtn = new Button();
+            sortBtn.setFont(new Font(14));
             sortBtn.setText("Sort by " + songSortType.getSortBtnText());
             sortBtn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override

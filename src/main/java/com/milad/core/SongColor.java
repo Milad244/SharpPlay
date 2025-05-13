@@ -3,7 +3,7 @@ package com.milad.core;
 import javafx.scene.paint.Color;
 
 /**
- * Song color
+ * An enum that represents a song color and also holds its javafx color equivalent.
  */
 public enum SongColor {
     BLACK("Black", Color.BLACK),
@@ -15,6 +15,11 @@ public enum SongColor {
     private final String colorName;
     private final Color fxColor;
 
+    /**
+     * Constructor for SongColor.
+     * @param colorName the name of the color, as a String
+     * @param fxColor the javafx paint color of the color, as a Color type
+     */
     SongColor(String colorName, Color fxColor) {
         this.colorName = colorName;
         this.fxColor = fxColor;
@@ -28,6 +33,11 @@ public enum SongColor {
         return fxColor;
     }
 
+    /**
+     * Gets the color from its ordinal number
+     * @param ordinal the ordinal of a given color, as an int
+     * @return the color from its ordinal number, as a SongColor enum
+     */
     public static SongColor fromOrdinal(int ordinal) {
         return values()[ordinal];
     }

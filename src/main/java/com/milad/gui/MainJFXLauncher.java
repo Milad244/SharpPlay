@@ -11,12 +11,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * The second/final launcher for my program.
+ */
 public class MainJFXLauncher extends Application {
 
+    /**
+     * Gets run from my main launcher and runs the start method.
+     * @param args the args from main, as a String[]
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Starts my primary stage (GUI) and that will run my MainController which will start my program.
+     */
     @Override
     public void start(Stage primaryStage) throws IOException {
         URL fxmlUrl = getClass().getResource("/fxml/mainWindow.fxml");
