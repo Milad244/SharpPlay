@@ -6,6 +6,7 @@ import com.milad.database.DatabaseHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
@@ -29,7 +30,7 @@ public class NewPlaylistController implements Initializable{
 
     private DatabaseHandler db;
     private String newPlaylistIconFile;
-    private static final String PLAYLIST_DEFAULT_ICON = "src/main/resources/icons/Default_Playlist_Icon.png";
+    private static final String PLAYLIST_DEFAULT_ICON = "/icons/Default_Playlist_Icon.png";
     private static final String PLAYLIST_ICONS_DIR = "User_Data/Playlist_Icons";
 
     /**
@@ -56,17 +57,26 @@ public class NewPlaylistController implements Initializable{
     }
 
     /**
-     * Selects the default icon for a playlist and updates the new playlist icon file field.
+     * Selects the default icon for a playlist, updates the new playlist icon file field, and displays the icon.
      */
     public void selectDefaultIcon() {
-        GUIHelper.displayIcon(defaultImageView, PLAYLIST_DEFAULT_ICON);
+        // Displaying Icon
+        InputStream iconStream = GUIHelper.class.getResourceAsStream(PLAYLIST_DEFAULT_ICON);
+        if (iconStream == null) {
+            throw new RuntimeException("File not found");
+        }
+        Image icon = new Image(iconStream);
+        defaultImageView.setImage(icon);
+        defaultImageView.setFitHeight(100);
+        defaultImageView.setPreserveRatio(true);
+
         newPlaylistIconFile = PLAYLIST_DEFAULT_ICON;
         selectedFromFile(false);
     }
 
     /**
-     * Lets the user select a file from their computer, checks if the file is allowed. If allowed, updates the new playlist icon file field.
-     * If not allowed, they will be given an error and allowed to try again.
+     * Lets the user select a file from their computer, checks if the file is allowed. If allowed, updates the new playlist icon file field
+     * and displays their icon. If not allowed, they will be given an error and allowed to try again.
      */
     public void selectFileIcon() {
         FileChooser fileChooser = new FileChooser();
@@ -84,7 +94,13 @@ public class NewPlaylistController implements Initializable{
                 return;
             }
 
-            GUIHelper.displayIcon(fromFileImageView, path);
+            // Displaying Icon
+            InputStream stream2 = new FileInputStream(path);
+            Image icon = new Image(stream2);
+            fromFileImageView.setImage(icon);
+            fromFileImageView.setFitHeight(100);
+            fromFileImageView.setPreserveRatio(true);
+
             newPlaylistIconFile = path;
             selectedFromFile(true);
         } catch (IOException e) {

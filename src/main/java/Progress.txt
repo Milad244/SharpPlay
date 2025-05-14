@@ -1,3 +1,0 @@
-# TODO
-- Make mode label at very top and also make songs mode sort from there
-- Super shuffle?

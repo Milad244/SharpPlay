@@ -59,14 +59,14 @@ public class MainController implements Initializable {
     private static final String NEW_PLAYLIST_FXML_PATH = "/fxml/newPlaylistWindow.fxml";
     private static final String NEW_SONG_FXML_PATH = "/fxml/newSongWindow.fxml";
 
-    private static final String PLUS_ICON_PATH = "src/main/resources/icons/Plus_Icon.png";
-    private static final String MINUS_ICON_PATH = "src/main/resources/icons/Minus_Icon.png";
+    private static final String PLUS_ICON_PATH = "/icons/Plus_Icon.png";
+    private static final String MINUS_ICON_PATH = "/icons/Minus_Icon.png";
 
-    private static final String PAUSE_ICON_PATH = "src/main/resources/icons/Pause_Icon.png";
-    private static final String PLAY_ICON_PATH = "src/main/resources/icons/Play_Icon.png";
-    private static final String LOOP_ICON_PATH = "src/main/resources/icons/Repeat_Icon.png";
-    private static final String ONE_LOOP_ICON_PATH = "src/main/resources/icons/Repeat_One_Icon.png";
-    private static final String SHUFFLE_ICON_PATH = "src/main/resources/icons/Shuffle_Icon.png";
+    private static final String PAUSE_ICON_PATH = "/icons/Pause_Icon.png";
+    private static final String PLAY_ICON_PATH = "/icons/Play_Icon.png";
+    private static final String LOOP_ICON_PATH = "/icons/Repeat_Icon.png";
+    private static final String ONE_LOOP_ICON_PATH = "/icons/Repeat_One_Icon.png";
+    private static final String SHUFFLE_ICON_PATH = "/icons/Shuffle_Icon.png";
 
     /**
      * An enum that represents what mode of our app we are in.
@@ -502,15 +502,7 @@ public class MainController implements Initializable {
                 loadAddRPlaylistList(s);
             }
         });
-        Button finishedBtn = new Button();
-        finishedBtn.setText("Finished Adding/Removing");
-        finishedBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                loadPlaylistList();
-            }
-        });
-        HBox addRHBox = new HBox(addRBtn, finishedBtn);
+        HBox addRHBox = new HBox(addRBtn);
         addRHBox.setAlignment(Pos.CENTER);
         addRHBox.setSpacing(5);
 
@@ -621,9 +613,7 @@ public class MainController implements Initializable {
                 } else {
                     db.insertPlaylistSong(newVal, addRSong);
                 }
-                Platform.runLater(() -> { // run later ensures we are not changing UI when user is interacting with it
-                    loadAddRPlaylistList(addRSong); //refresh options after action
-                });
+                loadPlaylistList();
             }
         };
         playlistAddRList.getSelectionModel().selectedItemProperty().addListener(addRListener);

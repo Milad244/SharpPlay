@@ -2,6 +2,7 @@ package com.milad.database;
 import com.milad.core.Song;
 import com.milad.core.Playlist;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -42,10 +43,13 @@ public class DatabaseHandler {
     }
 
     /**
-     * Sets connection to the database.
+     * Creates User_Data directory if it doesn't exist and sets connection to the database.
      */
     private void connect() {
         try {
+            // Reference: https://stackoverflow.com/questions/3634853/how-to-create-a-directory-in-java
+            // Creating the User_Data directory if it doesn't exist
+            new File("User_Data").mkdirs();
             conn = DriverManager.getConnection(DB_url);
             System.out.println("Connection Successful");
         } catch (Exception e) {

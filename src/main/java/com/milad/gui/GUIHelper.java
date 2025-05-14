@@ -14,56 +14,54 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
+import java.util.stream.Stream;
 
 /**
  * Static class to help with reused GUI actions.
  */
 public class GUIHelper {
     /**
-     * Displays an icon from its file path in a given imageView.
-     * @param imageView the imageView to display the icon on, as an imageView
-     * @param filepath the file path of the icon, as a String
-     */
-    public static void displayIcon(ImageView imageView, String filepath) {
-        try {
-            InputStream stream = new FileInputStream(filepath);
-            Image icon = new Image(stream);
-            imageView.setImage(icon);
-
-            //Styling
-            imageView.setFitHeight(100);
-            imageView.setPreserveRatio(true);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Gets an icon from its file path, puts it in an imageView and returns it.
      * @param filepath the file path of the icon, as a String
      * @return the imageView with the icon, as an imageView
      */
     public static ImageView getIcon(String filepath) {
-        try {
-            //Getting image and putting it into imageview
-            InputStream stream = new FileInputStream(filepath);
-            Image icon = new Image(stream);
-            ImageView imageView = new ImageView();
-            imageView.setImage(icon);
+        // First checking if from dir
+        File file = new File(filepath);
+        if (file.exists()) {
+            try {
+                InputStream stream = new FileInputStream(filepath);
+                Image iconImage = new Image(stream);
+                ImageView imageView = new ImageView();
+                imageView.setImage(iconImage);
 
-            //Styling
-            imageView.setFitHeight(50);
-            imageView.setPreserveRatio(true);
+                //Styling
+                imageView.setFitHeight(50);
+                imageView.setPreserveRatio(true);
 
-            return imageView;
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+                return imageView;
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
+        // If here, then it's in resources
+
+        //Getting image and putting it into imageview
+        InputStream iconStream = GUIHelper.class.getResourceAsStream(filepath);
+        if (iconStream == null) {
+            throw new RuntimeException("File not found");
+        }
+        Image iconImage = new Image(iconStream);
+        ImageView imageView = new ImageView();
+        imageView.setImage(iconImage);
+
+        //Styling
+        imageView.setFitHeight(50);
+        imageView.setPreserveRatio(true);
+
+        return imageView;
     }
 
     /**
@@ -72,12 +70,11 @@ public class GUIHelper {
      * @return the image with the image stream, as an Image
      */
     public static Image getImage(String filepath) {
-        try {
-            InputStream stream = new FileInputStream(filepath);
-            return new Image(stream);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+        InputStream imageStream = GUIHelper.class.getResourceAsStream(filepath);
+        if (imageStream == null) {
+            throw new RuntimeException("File not found");
         }
+        return new Image(imageStream);
     }
 
     /**

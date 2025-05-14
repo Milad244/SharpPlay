@@ -14,4 +14,4 @@ Completed. 2025-04-23 to 2025-05-13.
 - JavaFX
 - SQLite JDBC
 - Commons IO
-- Icons from [Flaticon](https://www.flaticon.com), by various authors.
+- Icons from [Flaticon](https://www.flaticon.com), by various authors
